@@ -14,6 +14,8 @@ public class MainAirDesk extends ActionBarActivity {
         setContentView(R.layout.activity_main_air_desk);
     }
 
+    String ola;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
