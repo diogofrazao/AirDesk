@@ -18,6 +18,7 @@ public class MainAirDesk extends ActionBarActivity {
     String adeus;
     String adeus2;
     String diogo;
+    String pedro;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
