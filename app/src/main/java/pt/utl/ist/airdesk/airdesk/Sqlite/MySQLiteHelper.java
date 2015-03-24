@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
-
+//ll
     public static final String TABLE_WS = "ws";
     public static final String COLUMN_NAMEWS = "nameWs";
     public static final String COLUMN_STORAGE = "storage";
