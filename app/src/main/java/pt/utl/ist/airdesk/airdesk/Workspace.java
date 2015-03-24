@@ -10,7 +10,8 @@ public class Workspace {
     private int quota;
     private String nameWorkspace;
     private String owner;
-    ArrayList<String> users;
+    ArrayList<User> users;
+    private String path;
 
     public Workspace(int quota, String nameWorkspace, String owner){
         this.quota = quota;
@@ -19,6 +20,14 @@ public class Workspace {
 
     }
 
+    public void addUser(String name, String permission) throws Exception {
+        for (User u : users) {
+            if (u.getEmail().equals(name)) {
+                throw new Exception();
+            }
+            users.add(new User(name,permission));
+        }
+    }
     public int getQuota() {
         return quota;
     }
