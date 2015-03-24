@@ -4,4 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_create_work_space">CreateWorkSpace</string>
+    <color name="jetGray">#2579BF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blueGray">#98AFC7</color>
 </resources>
