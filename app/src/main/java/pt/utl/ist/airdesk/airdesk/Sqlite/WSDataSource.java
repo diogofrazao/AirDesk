@@ -24,10 +24,13 @@ public class WSDataSource {
             MySQLiteHelper.COLUMN_STORAGE, MySQLiteHelper.COLUMN_PATH };
 
     public WSDataSource(Context context) {
+
         dbHelper = new MySQLiteHelper(context);
+
     }
 
     public void open() throws SQLException {
+
         database = dbHelper.getWritableDatabase();
     }
 
@@ -36,6 +39,8 @@ public class WSDataSource {
     }
 
     public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, String storage, String path) {
+
+
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_NAMEWS, nameWs);
         values.put(MySQLiteHelper.COLUMN_STORAGE, storage);
@@ -77,6 +82,10 @@ public class WSDataSource {
         // make sure to close the cursor
         cursor.close();
         return comments;
+    }
+
+    public void resetDatabase(){
+        dbHelper.onUpgrade(database,1,2);
     }
 
     private WorkspaceRepresentation cursorToComment(Cursor cursor) {

@@ -31,7 +31,7 @@ public class MainAirDesk extends ActionBarActivity {
     ArrayList<String> listaWorkplacesPrivados;
     ArrayAdapter<WorkspaceRepresentation> listAdapter;
     private WSDataSource datasource;
-
+    private List<WorkspaceRepresentation> values;
 
 
 
@@ -48,8 +48,9 @@ public class MainAirDesk extends ActionBarActivity {
         datasource = new WSDataSource(this);
         datasource.open();
 
-        List<WorkspaceRepresentation> values = datasource.getAllComments();
-        listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_list_item_1, values);
+
+        values  = datasource.getAllComments();
+        listAdapter  = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_list_item_1, values);
 
         listView.setAdapter(listAdapter);
 
@@ -61,13 +62,14 @@ public class MainAirDesk extends ActionBarActivity {
             @Override
             public void onClick(View arg0) {
                 WorkspaceRepresentation workspaceRepresentation = null;
-                String comments = "lol";
-                Log.v("conadamae", "passou");
+                String comments = "teste2";
+                Log.v("teste", "passou");
 
                 workspaceRepresentation = datasource.createWorkspaceRepresentation(comments, "lol", "lol");
-
+                values.add(datasource.createWorkspaceRepresentation(comments, "lol", "lol"));
+                listAdapter.notifyDataSetChanged();
                 //Intent intent = new Intent(MainAirDesk.this, CreateWorkSpace.class)
-                Log.v("conadamae", "passou");
+                Log.v("teste", "passou");
 //                startActivityForResult(intent,1);
 
             }
@@ -102,7 +104,11 @@ public class MainAirDesk extends ActionBarActivity {
     }
 
 
-
+    public void resetDatabase(View view){
+    datasource.resetDatabase();
+    values  = datasource.getAllComments();
+    listAdapter  = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_list_item_1, values);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
