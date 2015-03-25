@@ -59,6 +59,7 @@
         android:id="@+id/listView"
         android:textColor="@color/white"
         android:layout_below="@+id/textView2"
+        android:background="@color/blueGray"
         android:layout_alignRight="@+id/textView2"
         android:layout_alignEnd="@+id/textView2" />
 
@@ -67,6 +68,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/listView2"
         android:textColor="@color/white"
+        android:background="@color/blueGray"
         android:layout_alignTop="@+id/listView"
         android:layout_toRightOf="@+id/textView"
         android:layout_toEndOf="@+id/textView" />

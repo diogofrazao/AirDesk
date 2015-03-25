@@ -50,7 +50,7 @@ public class MainAirDesk extends ActionBarActivity {
 
 
         values  = datasource.getAllComments();
-        listAdapter  = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_list_item_1, values);
+        listAdapter  = new ArrayAdapter<WorkspaceRepresentation>(this, R.layout.simple_teste, values);
 
         listView.setAdapter(listAdapter);
 
@@ -66,8 +66,8 @@ public class MainAirDesk extends ActionBarActivity {
                 Log.v("teste", "passou");
 
                 workspaceRepresentation = datasource.createWorkspaceRepresentation(comments, "lol", "lol");
-                values.add(datasource.createWorkspaceRepresentation(comments, "lol", "lol"));
-                listAdapter.notifyDataSetChanged();
+                listAdapter.add(workspaceRepresentation);
+
                 //Intent intent = new Intent(MainAirDesk.this, CreateWorkSpace.class)
                 Log.v("teste", "passou");
 //                startActivityForResult(intent,1);
