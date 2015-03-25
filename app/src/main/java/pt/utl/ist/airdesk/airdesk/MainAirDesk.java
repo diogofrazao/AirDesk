@@ -106,8 +106,8 @@ public class MainAirDesk extends ActionBarActivity {
 
     public void resetDatabase(View view){
     datasource.resetDatabase();
-    values  = datasource.getAllComments();
-    listAdapter  = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_list_item_1, values);
+    values.clear();
+    listAdapter.notifyDataSetChanged();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
