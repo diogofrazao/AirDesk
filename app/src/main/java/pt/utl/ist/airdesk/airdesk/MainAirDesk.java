@@ -32,6 +32,8 @@ public class MainAirDesk extends ActionBarActivity {
     ArrayAdapter<WorkspaceRepresentation> listAdapter;
     private WSDataSource datasource;
     private List<WorkspaceRepresentation> values;
+    String filename;
+    String maxSize;
 
 
 
@@ -41,22 +43,21 @@ public class MainAirDesk extends ActionBarActivity {
         setContentView(R.layout.activity_main_air_desk);
 
         button = (Button) findViewById(R.id.button);
-        listView = (ListView) findViewById( R.id.listView);
-        listView2 = (ListView) findViewById( R.id.listView2);
+        listView = (ListView) findViewById(R.id.listView);
+        listView2 = (ListView) findViewById(R.id.listView2);
         listaWorkplacesPrivados = new ArrayList<String>();
 
         datasource = new WSDataSource(this);
         datasource.open();
 
 
-        values  = datasource.getAllComments();
-        listAdapter  = new ArrayAdapter<WorkspaceRepresentation>(this, R.layout.simple_teste, values);
+        values = datasource.getAllComments();
+        listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, R.layout.simple_teste, values);
 
         listView.setAdapter(listAdapter);
 
 
         button.setOnClickListener(new View.OnClickListener() {
-
 
 
             @Override
@@ -65,16 +66,40 @@ public class MainAirDesk extends ActionBarActivity {
                 String comments = "teste2";
                 Log.v("teste", "passou");
 
-                workspaceRepresentation = datasource.createWorkspaceRepresentation(comments, "lol", "lol");
-                listAdapter.add(workspaceRepresentation);
+                //workspaceRepresentation = datasource.createWorkspaceRepresentation(comments, "lol", "lol");
+                //listAdapter.add(workspaceRepresentation);
 
-                //Intent intent = new Intent(MainAirDesk.this, CreateWorkSpace.class)
+                Intent intent = new Intent(MainAirDesk.this, CreateWorkSpace.class);
                 Log.v("teste", "passou");
-//                startActivityForResult(intent,1);
+                startActivityForResult(intent, 1);
 
             }
 
         });
+    }
+
+
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == 1) {
+                if (resultCode == RESULT_OK) {
+                    Intent intent = getIntent();
+                    WorkspaceRepresentation workspaceRepresentation = null;
+                    String comments = "teste2";
+
+
+                    filename = data.getStringExtra("titles");
+                    maxSize = data.getStringExtra("contents");
+
+                    workspaceRepresentation = datasource.createWorkspaceRepresentation(filename, "lol", "lol");
+                    listAdapter.add(workspaceRepresentation);
+
+                    //values.add(filename);
+                    //contents.add(conteudo);
+                    listAdapter.notifyDataSetChanged();
+
+                }
+            }
+        }
 
 
         /*String sFileName="teste3.txt";
@@ -101,7 +126,7 @@ public class MainAirDesk extends ActionBarActivity {
         }
 */
 
-    }
+
 
 
     public void resetDatabase(View view){

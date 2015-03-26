@@ -1,12 +1,21 @@
 package pt.utl.ist.airdesk.airdesk;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class CreateWorkSpace extends ActionBarActivity {
+
+    Button workspaceButtonCreate;
+    EditText workspaceNameEntry;
+    EditText workspaceDimensionEntry;
 
     //dsfsdf
 
@@ -14,6 +23,39 @@ public class CreateWorkSpace extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_work_space);
+
+
+        workspaceNameEntry = (EditText) findViewById(R.id.workspaceNameEntry);
+
+        workspaceDimensionEntry = (EditText) findViewById(R.id.workspaceDimensionEntry);
+
+        workspaceButtonCreate = (Button) findViewById(R.id.workspaceButtonCreate);
+
+
+        workspaceButtonCreate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+
+                String str = workspaceNameEntry .getText().toString();
+                String str2 = workspaceDimensionEntry.getText().toString();
+
+                Intent intent = new Intent(CreateWorkSpace.this, MainAirDesk.class);
+                intent.putExtra("titles",str);
+                intent.putExtra("contents",str2);
+
+                setResult(RESULT_OK,intent);
+                finish();
+
+
+
+
+            }
+
+        });
+
+
     }
 
 
