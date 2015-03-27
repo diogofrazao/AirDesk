@@ -4,7 +4,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainAirDesk"
-    android:background="@color/jetGray"
     android:id="@+id/tt">
 
     <TextView
@@ -12,7 +11,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Home"
-        android:textColor="@color/white"
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -23,8 +21,6 @@
         android:layout_height="wrap_content"
         android:text="Create"
         android:id="@+id/button"
-        android:background="@color/blueGray"
-        android:textColor="@color/white"
         android:layout_marginTop="59dp"
         android:layout_below="@+id/textView"
         android:layout_alignLeft="@+id/textView2"
@@ -35,7 +31,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Privado"
-        android:textColor="@color/white"
+
         android:id="@+id/textView2"
         android:layout_below="@+id/button"
         android:layout_toLeftOf="@+id/textView"
@@ -47,7 +43,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Publico"
-        android:textColor="@color/white"
         android:id="@+id/textView3"
         android:layout_above="@+id/listView2"
         android:layout_toRightOf="@+id/textView"
@@ -57,9 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView"
-        android:textColor="@color/white"
         android:layout_below="@+id/textView2"
-        android:background="@color/blueGray"
         android:layout_alignRight="@+id/textView2"
         android:layout_alignEnd="@+id/textView2" />
 
@@ -67,8 +60,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView2"
-        android:textColor="@color/white"
-        android:background="@color/blueGray"
         android:layout_alignTop="@+id/listView"
         android:layout_toRightOf="@+id/textView"
         android:layout_toEndOf="@+id/textView" />
@@ -79,8 +70,6 @@
         android:text="Reset"
         android:id="@+id/reset"
         android:onClick="resetDatabase"
-        android:background="@color/blueGray"
-        android:textColor="@color/white"
         android:layout_alignTop="@+id/button"
         android:layout_toRightOf="@+id/textView"
         android:layout_toEndOf="@+id/textView" />

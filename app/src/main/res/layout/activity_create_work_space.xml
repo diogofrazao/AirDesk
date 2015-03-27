@@ -26,7 +26,7 @@
         android:layout_below="@+id/workspaceName"
         android:layout_alignLeft="@+id/workspaceName"
         android:layout_alignStart="@+id/workspaceName"
-        android:height="30dp"
+        android:height="40dp"
         android:width="180dp"/>
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_below="@+id/workspaceDimension"
         android:layout_alignLeft="@+id/workspaceDimension"
         android:layout_alignStart="@+id/workspaceDimension"
-        android:height="30dp"
+        android:height="40dp"
         android:width="180dp"/>
 
     <Button
