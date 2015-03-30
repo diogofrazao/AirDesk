@@ -90,7 +90,7 @@ public class WSDataSource {
         String aColumn[] = {"nameWs"};
 
         ArrayList<String> list = new ArrayList<String>();
-
+//ss
 
         Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE storage='"+login+"'", null);
 
