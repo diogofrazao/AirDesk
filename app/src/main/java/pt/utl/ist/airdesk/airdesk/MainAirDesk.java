@@ -29,11 +29,14 @@ public class MainAirDesk extends ActionBarActivity {
     ListView listView;
     ListView listView2;
     ArrayList<String> listaWorkplacesPrivados;
-    ArrayAdapter<WorkspaceRepresentation> listAdapter;
+    ArrayAdapter<String> listAdapter;
+    ArrayAdapter<String> listAdapter2;
     private WSDataSource datasource;
-    private List<WorkspaceRepresentation> values;
+    private ArrayList<String> values;
+    private ArrayList<String> values2;
     String filename;
     String maxSize;
+    String login;
 
 
 
@@ -47,14 +50,39 @@ public class MainAirDesk extends ActionBarActivity {
         listView2 = (ListView) findViewById(R.id.listView2);
         listaWorkplacesPrivados = new ArrayList<String>();
 
+
+
         datasource = new WSDataSource(this);
         datasource.open();
 
 
-        values = datasource.getAllComments();
-        listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, R.layout.simple_teste, values);
+        Intent intent = getIntent();
+
+        login = intent.getStringExtra("login");
+
+        values2 = datasource.GetAllValues(login);
+
+
+        values = new ArrayList<String>();
+
+
+
+        String path = Environment.getExternalStorageDirectory().toString()+"/"+login;
+        Log.d("Files", "Path: " + path);
+        File f = new File(path);
+        File file[] = f.listFiles();
+        Log.d("Files", "Size: "+ file.length);
+        for (int i=0; i < file.length; i++)
+        {
+            values.add(file[i].getName());
+        }
+
+
+        listAdapter = new ArrayAdapter<String>(this, R.layout.simple_teste, values);
+        listAdapter2 = new ArrayAdapter<String>(this, R.layout.simple_teste, values2);
 
         listView.setAdapter(listAdapter);
+        listView2.setAdapter(listAdapter2);
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -62,15 +90,17 @@ public class MainAirDesk extends ActionBarActivity {
 
             @Override
             public void onClick(View arg0) {
-                WorkspaceRepresentation workspaceRepresentation = null;
+                //WorkspaceRepresentation workspaceRepresentation = null;
                 String comments = "teste2";
                 Log.v("teste", "passou");
+
 
                 //workspaceRepresentation = datasource.createWorkspaceRepresentation(comments, "lol", "lol");
                 //listAdapter.add(workspaceRepresentation);
 
                 Intent intent = new Intent(MainAirDesk.this, CreateWorkSpace.class);
-                Log.v("teste", "passou");
+                intent.putExtra("login",login);
+                Log.v("VE SO O LOGIN", login);
                 startActivityForResult(intent, 1);
 
             }
@@ -83,15 +113,15 @@ public class MainAirDesk extends ActionBarActivity {
             if (requestCode == 1) {
                 if (resultCode == RESULT_OK) {
                     Intent intent = getIntent();
-                    WorkspaceRepresentation workspaceRepresentation = null;
+                    //WorkspaceRepresentation workspaceRepresentation = null;
                     String comments = "teste2";
 
 
                     filename = data.getStringExtra("titles");
                     maxSize = data.getStringExtra("contents");
 
-                    workspaceRepresentation = datasource.createWorkspaceRepresentation(filename, "lol", "lol");
-                    listAdapter.add(workspaceRepresentation);
+                    //workspaceRepresentation = datasource.createWorkspaceRepresentation(filename, "lol", "lol");
+                    listAdapter.add(filename);
 
                     //values.add(filename);
                     //contents.add(conteudo);
@@ -102,7 +132,7 @@ public class MainAirDesk extends ActionBarActivity {
         }
 
 
-        /*String sFileName="teste3.txt";
+     /*   String sFileName="teste3.txt";
         String sBody="lolol";
 
         try
@@ -124,8 +154,8 @@ public class MainAirDesk extends ActionBarActivity {
             //importError = e.getMessage();
            // iError();
         }
-*/
 
+*/
 
 
 

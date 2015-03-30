@@ -84,6 +84,32 @@ public class WSDataSource {
         return comments;
     }
 
+
+    public ArrayList<String> GetAllValues(String login){
+        String aTable = "ws";
+        String aColumn[] = {"nameWs"};
+
+        ArrayList<String> list = new ArrayList<String>();
+
+
+        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE storage='"+login+"'", null);
+
+
+        while(cursor.moveToNext()){
+            Log.d("ficheiros:", cursor.getString(0));
+            list.add(cursor.getString(0));
+
+        }
+
+
+
+
+        return list;
+    }
+
+
+
+
     public void resetDatabase(){
         dbHelper.onUpgrade(database,1,2);
     }

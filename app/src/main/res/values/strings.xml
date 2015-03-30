@@ -7,4 +7,5 @@
     <color name="jetGray">#2579BF</color>
     <color name="white">#FFFFFF</color>
     <color name="blueGray">#98AFC7</color>
+    <string name="title_activity_login_page">LoginPage</string>
 </resources>
