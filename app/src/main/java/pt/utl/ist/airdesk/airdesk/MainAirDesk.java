@@ -56,6 +56,7 @@ public class MainAirDesk extends ActionBarActivity {
         datasource.open();
 
 
+<<<<<<< HEAD
         Intent intent = getIntent();
 
         login = intent.getStringExtra("login");
@@ -80,6 +81,10 @@ public class MainAirDesk extends ActionBarActivity {
 
         listAdapter = new ArrayAdapter<String>(this, R.layout.simple_teste, values);
         listAdapter2 = new ArrayAdapter<String>(this, R.layout.simple_teste, values2);
+=======
+        values = datasource.getAllComments();
+        listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_expandable_list_item_1, values);
+>>>>>>> origin/master
 
         listView.setAdapter(listAdapter);
         listView2.setAdapter(listAdapter2);
