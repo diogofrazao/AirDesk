@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:text="go"
         android:id="@+id/go"
+        android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
@@ -28,6 +29,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/loginText"
         android:layout_above="@+id/go"
+        android:gravity="center"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

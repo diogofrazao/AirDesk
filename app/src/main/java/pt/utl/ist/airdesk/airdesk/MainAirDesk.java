@@ -56,7 +56,6 @@ public class MainAirDesk extends ActionBarActivity {
         datasource.open();
 
 
-<<<<<<< HEAD
         Intent intent = getIntent();
 
         login = intent.getStringExtra("login");
@@ -81,10 +80,10 @@ public class MainAirDesk extends ActionBarActivity {
 
         listAdapter = new ArrayAdapter<String>(this, R.layout.simple_teste, values);
         listAdapter2 = new ArrayAdapter<String>(this, R.layout.simple_teste, values2);
-=======
-        values = datasource.getAllComments();
-        listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_expandable_list_item_1, values);
->>>>>>> origin/master
+
+        //values = datasource.getAllComments();
+        //listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_expandable_list_item_1, values);
+
 
         listView.setAdapter(listAdapter);
         listView2.setAdapter(listAdapter2);
@@ -166,8 +165,8 @@ public class MainAirDesk extends ActionBarActivity {
 
     public void resetDatabase(View view){
     datasource.resetDatabase();
-    values.clear();
-    listAdapter.notifyDataSetChanged();
+    values2.clear();
+    listAdapter2.notifyDataSetChanged();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
