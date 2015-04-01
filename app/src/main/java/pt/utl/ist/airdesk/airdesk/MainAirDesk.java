@@ -100,6 +100,16 @@ public class MainAirDesk extends ActionBarActivity {
             }
         });
 
+        listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainAirDesk.this, ViewWorkspace.class);
+                intent.putExtra("wsName",values2.get(position));
+                intent.putExtra("login",login);
+                startActivity(intent);
+            }
+        });
+
 
         button.setOnClickListener(new View.OnClickListener() {
 

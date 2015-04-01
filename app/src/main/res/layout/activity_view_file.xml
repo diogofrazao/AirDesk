@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="pt.utl.ist.airdesk.airdesk.ViewWorkspace">
+    tools:context="pt.utl.ist.airdesk.airdesk.ViewFile">
 
 
     <TextView
@@ -18,30 +18,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp" />
 
-    <ListView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView3"
+        android:id="@+id/editText2"
+        android:height="350dp"
+        android:width="350dp"
+        android:gravity="top"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_below="@+id/editText"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/button2" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create File"
-        android:id="@+id/button2"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Share Workspace"
-        android:id="@+id/button3"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
 </RelativeLayout>

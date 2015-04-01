@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -31,21 +33,22 @@ public class ViewWorkspace extends ActionBarActivity {
         TextView editText = (TextView) findViewById(R.id.editText);
         filesList = new ArrayList<String>();
         Intent intent = getIntent();
-        String name = intent.getStringExtra("wsName");
-        String login = intent.getStringExtra("login");
+        final String name = intent.getStringExtra("wsName");
+        final String login = intent.getStringExtra("login");
         //listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, filesList);
        // listView.setAdapter(listAdapter);
 
-       String path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+name;
+       final String path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+name;
         File f = new File(path);
         File file[] = f.listFiles();
-        String tamanho = Integer.toString(file.length);
+//        String tamanho = Integer.toString(file.length);
 
-        Log.v("tamanho",tamanho);
-        for (int i=0; i < file.length; i++)
-        {
-            filesList.add(file[i].getName());
-            Log.v("file",file[i].getName());
+ //       Log.v("tamanho",tamanho);
+        if(!(file == null)) {
+            for (int i = 0; i < file.length; i++) {
+                filesList.add(file[i].getName());
+                Log.v("file", file[i].getName());
+            }
         }
 
         listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, filesList);
@@ -54,6 +57,15 @@ public class ViewWorkspace extends ActionBarActivity {
         editText.setText(name, TextView.BufferType.EDITABLE);
 
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(ViewWorkspace.this,ViewFile.class);
+                intent.putExtra("fileName",filesList.get(position));
+                intent.putExtra("path",path);
+                startActivity(intent);
+            }
+        });
 
 
 
