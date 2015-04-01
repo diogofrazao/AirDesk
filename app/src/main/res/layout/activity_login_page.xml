@@ -8,12 +8,10 @@
 
     <TextView android:text="Insira o Username" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="77dp"
         android:id="@+id/username"
         android:gravity="center"
         android:layout_above="@+id/loginText"
-        android:layout_alignRight="@+id/go"
-        android:layout_alignEnd="@+id/go" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -31,5 +29,14 @@
         android:layout_above="@+id/go"
         android:gravity="center"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Signup"
+        android:id="@+id/SignupButton"
+        android:layout_below="@+id/go"
+        android:layout_alignLeft="@+id/go"
+        android:layout_alignStart="@+id/go" />
 
 </RelativeLayout>
