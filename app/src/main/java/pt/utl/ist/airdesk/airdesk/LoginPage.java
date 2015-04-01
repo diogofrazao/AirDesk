@@ -9,8 +9,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import pt.utl.ist.airdesk.airdesk.Sqlite.UsersDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.UsersRepresentation;
 
 
 public class LoginPage extends ActionBarActivity {
@@ -18,12 +24,16 @@ public class LoginPage extends ActionBarActivity {
     EditText loginText;
     Button go;
     Button SignupButton;
+    private UsersDataSource datasource;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
+
+        datasource = new UsersDataSource(this);
+        datasource.open();
 
         loginText = (EditText) findViewById(R.id.loginText);
         go = (Button) findViewById(R.id.go);
@@ -34,19 +44,32 @@ public class LoginPage extends ActionBarActivity {
             @Override
             public void onClick(View arg0) {
 
+                List<UsersRepresentation> comments = new ArrayList<>();
+
+                UsersRepresentation usersRepresentation = null;
                 String login = loginText.getText().toString();
 
-                File root = new File(Environment.getExternalStorageDirectory(), login);
-                if (!root.exists())
-                    root.mkdirs();
+                comments = datasource.getAllComments();
+                String flag = "nada";
+
+                for(UsersRepresentation u: comments){
+                    if(u.getName().equals(login)){
+                        flag = "sim";
+                        File root = new File(Environment.getExternalStorageDirectory(), login);
+                        if (!root.exists())
+                            root.mkdirs();
+                        Intent intent = new Intent(LoginPage.this, MainAirDesk.class);
+                        intent.putExtra("login",login);
+                        startActivity(intent);
+                        }
+                    }
+
+                if(flag.equals("nada")){
+                        Toast.makeText(getApplicationContext(), "Utilizador inválido!", Toast.LENGTH_SHORT).show();
+
+                }
 
 
-
-                Intent intent = new Intent(LoginPage.this, MainAirDesk.class);
-                intent.putExtra("login",login);
-
-
-                startActivity(intent);
 
             }
 
