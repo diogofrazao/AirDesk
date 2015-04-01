@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -56,7 +57,7 @@ public class MainAirDesk extends ActionBarActivity {
         datasource.open();
 
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
         login = intent.getStringExtra("login");
 
@@ -78,8 +79,8 @@ public class MainAirDesk extends ActionBarActivity {
         }
 
 
-        listAdapter = new ArrayAdapter<String>(this, R.layout.simple_teste, values);
-        listAdapter2 = new ArrayAdapter<String>(this, R.layout.simple_teste, values2);
+        listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
+        listAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values2);
 
         //values = datasource.getAllComments();
         //listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_expandable_list_item_1, values);
@@ -87,6 +88,17 @@ public class MainAirDesk extends ActionBarActivity {
 
         listView.setAdapter(listAdapter);
         listView2.setAdapter(listAdapter2);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainAirDesk.this, ViewWorkspace.class);
+                intent.putExtra("wsName",values.get(position));
+                intent.putExtra("login",login);
+                startActivity(intent);
+            }
+        });
 
 
         button.setOnClickListener(new View.OnClickListener() {

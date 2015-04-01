@@ -73,6 +73,8 @@ public class CreateWorkSpace extends ActionBarActivity {
                 Log.v("PATHHHHHHH", path);
 
                 File root = new File(Environment.getExternalStorageDirectory() + "/"+login, str);
+                Long sdcard = Environment.getExternalStorageDirectory().length();
+                Log.v("sdcard size",sdcard.toString());
                 if (!root.exists()) {
                     root.mkdirs();
                     intent2.putExtra("titles",str);
@@ -82,7 +84,44 @@ public class CreateWorkSpace extends ActionBarActivity {
                         workspaceRepresentation = datasource.createWorkspaceRepresentation(str, user, path);
                     }
 
-                    
+
+                       String sFileName="teste3.txt";
+        String sBody="lolol";
+
+        try
+        {
+            File gpxfile = new File(root, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+            Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+            //importError = e.getMessage();
+           // iError();
+        }
+
+                    String sFileName1="teste2.txt";
+                    String sBody1="lolol";
+
+                    try
+                    {
+                        File gpxfile = new File(root, sFileName1);
+                        FileWriter writer = new FileWriter(gpxfile);
+                        writer.append(sBody1);
+                        writer.flush();
+                        writer.close();
+                        Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                        //importError = e.getMessage();
+                        // iError();
+                    }
 
                     setResult(RESULT_OK,intent2);
                     finish();
