@@ -1,49 +1,32 @@
 package pt.utl.ist.airdesk.airdesk;
 
 import android.content.Intent;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-
-import java.io.File;
 
 
-public class LoginPage extends ActionBarActivity {
+public class RegisterPage extends ActionBarActivity {
 
-    EditText loginText;
-    Button go;
-    Button SignupButton;
-
+    Button RegisterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_page);
+        setContentView(R.layout.activity_register_page);
 
-        loginText = (EditText) findViewById(R.id.loginText);
-        go = (Button) findViewById(R.id.go);
-        SignupButton = (Button) findViewById(R.id.SignupButton);
+        RegisterButton = (Button) findViewById(R.id.RegisterButton);
 
-        go.setOnClickListener(new View.OnClickListener() {
+        RegisterButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-                String login = loginText.getText().toString();
 
-                File root = new File(Environment.getExternalStorageDirectory(), login);
-                if (!root.exists())
-                    root.mkdirs();
-
-
-
-                Intent intent = new Intent(LoginPage.this, MainAirDesk.class);
-                intent.putExtra("login",login);
+                Intent intent = new Intent(RegisterPage.this, LoginPage.class);
 
 
                 startActivity(intent);
@@ -51,26 +34,6 @@ public class LoginPage extends ActionBarActivity {
             }
 
         });
-
-
-        SignupButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-
-
-                Intent intent = new Intent(LoginPage.this, RegisterPage.class);
-
-
-                startActivity(intent);
-
-            }
-
-        });
-
-
-
-
 
 
     }
@@ -79,7 +42,7 @@ public class LoginPage extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login_page, menu);
+        getMenuInflater().inflate(R.menu.menu_register_page, menu);
         return true;
     }
 

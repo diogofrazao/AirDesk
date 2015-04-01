@@ -9,4 +9,5 @@
     <color name="blueGray">#98AFC7</color>
     <string name="title_activity_login_page">LoginPage</string>
     <string name="title_activity_view_workspace">ViewWorkspace</string>
+    <string name="title_activity_register_page">RegisterPage</string>
 </resources>
