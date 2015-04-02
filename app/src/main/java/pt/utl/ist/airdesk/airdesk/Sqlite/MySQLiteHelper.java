@@ -16,6 +16,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NAMEWS = "nameWs";
     public static final String COLUMN_STORAGE = "storage";
     public static final String COLUMN_PATH = "path";
+    public static final String COLUMN_OWNER = "owner";
     public static final String COLUMN_ID = "id";
 
 
@@ -29,6 +30,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + " integer primary key autoincrement, " + COLUMN_NAMEWS
             + " text not null, " + COLUMN_STORAGE
             + " text not null, " + COLUMN_PATH
+            + " text not null, " + COLUMN_OWNER
             + " text not null);";
 
 

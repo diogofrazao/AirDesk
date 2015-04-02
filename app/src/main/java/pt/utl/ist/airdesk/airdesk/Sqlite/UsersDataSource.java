@@ -78,6 +78,21 @@ public class UsersDataSource {
         return comments;
     }
 
+    public String userOnTable(String username){
+        List<UsersRepresentation> comments = new ArrayList<UsersRepresentation>();
+        String estaNaBd="nao";
+
+        comments=getAllComments();
+
+        for(UsersRepresentation u: comments){
+            if(u.getName().equals(username)) {
+                estaNaBd = "sim";
+            }
+        }
+
+        return estaNaBd;
+    }
+
 
 
 

@@ -8,6 +8,8 @@ public class WorkspaceRepresentation {
     private String nameWs;
     private String storage;
     private String path;
+    private String owner;
+    private long id;
 
     public long getId() {
         return id;
@@ -16,15 +18,21 @@ public class WorkspaceRepresentation {
     public void setId(long id) {
         this.id = id;
     }
-    //dasd
 
-    private long id;
     public String getStorage() {
         return storage;
     }
 
     public void setStorage(String storage) {
         this.storage = storage;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getOwner() {
+        return owner;
     }
 
     public String getNameWs() {

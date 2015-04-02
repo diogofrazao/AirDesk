@@ -44,17 +44,13 @@ public class LoginPage extends ActionBarActivity {
             @Override
             public void onClick(View arg0) {
 
-                List<UsersRepresentation> comments = new ArrayList<>();
-
-                UsersRepresentation usersRepresentation = null;
+                String estaNaBd;
                 String login = loginText.getText().toString();
+                estaNaBd = datasource.userOnTable(login);
 
-                comments = datasource.getAllComments();
-                String flag = "nada";
 
-                for(UsersRepresentation u: comments){
-                    if(u.getName().equals(login)){
-                        flag = "sim";
+
+                    if(estaNaBd.equals("sim")){
                         File root = new File(Environment.getExternalStorageDirectory(), login);
                         if (!root.exists())
                             root.mkdirs();
@@ -62,9 +58,9 @@ public class LoginPage extends ActionBarActivity {
                         intent.putExtra("login",login);
                         startActivity(intent);
                         }
-                    }
 
-                if(flag.equals("nada")){
+
+                if(estaNaBd.equals("nao")){
                         Toast.makeText(getApplicationContext(), "Utilizador inválido!", Toast.LENGTH_SHORT).show();
 
                 }

@@ -81,7 +81,7 @@ public class CreateWorkSpace extends ActionBarActivity {
                     intent2.putExtra("contents",str2);
                     if(!workspaceUsers.getText().toString().equals(null)){
                         Log.v("teste", "PASSSOU");
-                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, user, path);
+                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, user, path, login);
                     }
 
 

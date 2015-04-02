@@ -21,7 +21,7 @@ public class WSDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID , MySQLiteHelper.COLUMN_NAMEWS,
-            MySQLiteHelper.COLUMN_STORAGE, MySQLiteHelper.COLUMN_PATH };
+            MySQLiteHelper.COLUMN_STORAGE, MySQLiteHelper.COLUMN_PATH, MySQLiteHelper.COLUMN_OWNER };
 
     public WSDataSource(Context context) {
 
@@ -38,25 +38,26 @@ public class WSDataSource {
         dbHelper.close();
     }
 
-    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, String storage, String path) {
+    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, String storage, String path, String owner) {
 
 
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_NAMEWS, nameWs);
         values.put(MySQLiteHelper.COLUMN_STORAGE, storage);
         values.put(MySQLiteHelper.COLUMN_PATH, path);
+        values.put(MySQLiteHelper.COLUMN_OWNER, owner);
 
         long insertId = database.insert(MySQLiteHelper.TABLE_WS, null,
                 values);
-        Log.v("conadamae","create1");
+
         Cursor cursor = database.query(MySQLiteHelper.TABLE_WS,
                 allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
-        Log.v("conadamae","create1.5");
+
         cursor.moveToFirst();
         WorkspaceRepresentation newComment = cursorToComment(cursor);
         cursor.close();
-        Log.v("conadamae","create2");
+
         return newComment;
     }
 
@@ -125,6 +126,7 @@ public class WSDataSource {
         Log.v("conadamae","cursor4");
         comment.setPath(cursor.getString(3));
         Log.v("conadamae","cursor4");
+        comment.setPath(cursor.getString(4));
         return comment;
     }
 }
