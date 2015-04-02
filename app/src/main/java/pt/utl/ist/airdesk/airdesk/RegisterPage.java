@@ -3,27 +3,59 @@ package pt.utl.ist.airdesk.airdesk;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import pt.utl.ist.airdesk.airdesk.Sqlite.UsersDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.UsersRepresentation;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 
 public class RegisterPage extends ActionBarActivity {
 
     Button RegisterButton;
+    private UsersDataSource datasource;
+    EditText registerBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_page);
 
+        registerBox = (EditText) findViewById(R.id.registerBox);
         RegisterButton = (Button) findViewById(R.id.RegisterButton);
+        datasource = new UsersDataSource(this);
+        datasource.open();
 
         RegisterButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
+
+                List<UsersRepresentation> comments = new ArrayList<>();
+
+                UsersRepresentation usersRepresentation = null;
+
+                String str = registerBox.getText().toString();
+
+                usersRepresentation = datasource.createUsersRepresentation(str);
+
+                comments = datasource.getAllComments();
+                String debug = comments.get(0).getName();
+
+                Log.d("USERS:", debug);
+
+
+
+
 
 
                 Intent intent = new Intent(RegisterPage.this, LoginPage.class);
