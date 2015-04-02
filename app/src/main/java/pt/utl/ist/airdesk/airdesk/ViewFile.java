@@ -5,6 +5,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -16,17 +19,24 @@ import java.io.IOException;
 
 public class ViewFile extends ActionBarActivity {
 
+    EditText fileTextView;
+    String fileName;
+    String path;
+    Button editFile;
+    Button saveFile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_file);
 
         TextView fileNameView = (TextView) findViewById(R.id.editText);
-        TextView fileTextView = (TextView) findViewById(R.id.editText2);
+        fileTextView = (EditText) findViewById(R.id.editText2);
+        saveFile = (Button) findViewById(R.id.button5);
 
         Intent intent = getIntent();
-        final String fileName = intent.getStringExtra("fileName");
-        final String path = intent.getStringExtra("path");
+        fileName = intent.getStringExtra("fileName");
+        path = intent.getStringExtra("path");
 
         fileNameView.setText(fileName, TextView.BufferType.EDITABLE);
 
@@ -48,11 +58,19 @@ public class ViewFile extends ActionBarActivity {
             //You'll need to add proper error handling here
         }
 
-        fileTextView.setText(text, TextView.BufferType.EDITABLE);
-        fileTextView.setKeyListener(null);
+        fileTextView.setText(text, EditText.BufferType.EDITABLE);
+        fileTextView.setEnabled(false);
+        fileTextView.setClickable(false);
+        saveFile.setEnabled(false);
 
     }
 
+
+    public void onClick(View view){
+        fileTextView.setEnabled(true);
+        fileTextView.setClickable(true);
+        saveFile.setEnabled(true);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
