@@ -31,6 +31,14 @@
             android:name=".ViewWorkspace"
             android:label="@string/title_activity_view_workspace" >
         </activity>
+        <activity
+            android:name=".RegisterPage"
+            android:label="@string/title_activity_view_workspace" >
+        </activity>
+        <activity
+            android:name=".ViewFile"
+            android:label="@string/title_activity_view_workspace" >
+        </activity>
     </application>
 
 </manifest>
