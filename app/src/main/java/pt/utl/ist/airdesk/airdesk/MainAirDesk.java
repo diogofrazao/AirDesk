@@ -183,6 +183,21 @@ public class MainAirDesk extends ActionBarActivity {
 
 */
 
+    /*
+    public static long getFolderSize(File dir) {
+    long size = 0;
+    for (File file : dir.listFiles()) {
+        if (file.isFile()) {
+            System.out.println(file.getName() + " " + file.length());
+            size += file.length();
+        }
+        else
+            size += getFolderSize(file);
+    }
+    return size;
+}
+     */
+
 
 
     public void resetDatabase(View view){
