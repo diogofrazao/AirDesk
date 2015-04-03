@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:text="Create File"
         android:id="@+id/button2"
+        android:onClick="onClickCreateFile"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

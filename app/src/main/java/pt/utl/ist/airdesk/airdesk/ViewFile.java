@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +25,7 @@ public class ViewFile extends ActionBarActivity {
     String path;
     Button editFile;
     Button saveFile;
-
+    File file;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +42,7 @@ public class ViewFile extends ActionBarActivity {
         fileNameView.setText(fileName, TextView.BufferType.EDITABLE);
 
         File f = new File(path);
-        File file = new File(f,fileName);
+        file = new File(f,fileName);
         StringBuilder text = new StringBuilder();
 
         try {
@@ -66,10 +67,30 @@ public class ViewFile extends ActionBarActivity {
     }
 
 
-    public void onClick(View view){
+    public void onClickEdit(View view){
         fileTextView.setEnabled(true);
         fileTextView.setClickable(true);
         saveFile.setEnabled(true);
+    }
+
+
+    public void onClickSave(View view){
+        try
+        {
+
+            FileWriter writer = new FileWriter(file);
+            writer.append(fileTextView.getText().toString());
+            writer.flush();
+            writer.close();
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+            //importError = e.getMessage();
+            // iError();
+        }
+        finish();
     }
 
     @Override

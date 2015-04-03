@@ -11,4 +11,5 @@
     <string name="title_activity_login_page">LoginPage</string>
     <string name="title_activity_view_workspace">ViewWorkspace</string>
     <string name="title_activity_view_file">ViewFile</string>
+    <string name="title_activity_create_file">CreateFile</string>
 </resources>

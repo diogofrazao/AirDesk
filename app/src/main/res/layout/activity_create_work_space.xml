@@ -54,9 +54,9 @@
         android:layout_height="wrap_content"
         android:text="Create"
         android:id="@+id/workspaceButtonCreate"
-        android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/workspaceDimensionEntry"
-        android:layout_alignStart="@+id/workspaceDimensionEntry" />
+        android:layout_below="@+id/workspaceUsers"
+        android:layout_alignLeft="@+id/workspaceUsers"
+        android:layout_alignStart="@+id/workspaceUsers" />
 
     <TextView
         android:layout_width="wrap_content"

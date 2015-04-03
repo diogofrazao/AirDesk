@@ -39,6 +39,10 @@
             android:name=".ViewFile"
             android:label="@string/title_activity_view_workspace" >
         </activity>
+        <activity
+            android:name=".CreateFile"
+            android:label="@string/title_activity_create_file" >
+        </activity>
     </application>
 
 </manifest>
