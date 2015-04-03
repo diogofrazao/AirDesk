@@ -13,9 +13,11 @@
         android:src="@mipmap/txt" />
     <TextView
         android:id="@+id/Itemname"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginLeft="-52dp"
+        android:hint="sadasd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="10sp"
         android:paddingTop="5dp"/>
 </LinearLayout>

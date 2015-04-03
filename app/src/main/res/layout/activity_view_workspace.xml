@@ -18,10 +18,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp" />
 
-    <ListView
+    <GridView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView3"
+        android:numColumns="auto_fit"
+        android:gravity="center"
+        android:columnWidth="50dp"
+        android:stretchMode="columnWidth"
         android:layout_below="@+id/editText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

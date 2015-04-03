@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 public class ViewWorkspace extends ActionBarActivity {
 
 
-    ListView listView;
+    GridView listView;
     ArrayList<String> filesList;
     ArrayAdapter<String> listAdapter;
     String path;
@@ -36,7 +37,7 @@ public class ViewWorkspace extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_workspace);
-        listView = (ListView) findViewById(R.id.listView3);
+        listView = (GridView) findViewById(R.id.listView3);
         TextView editText = (TextView) findViewById(R.id.editText);
         filesList = new ArrayList<String>();
         Intent intent = getIntent();
