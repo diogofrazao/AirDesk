@@ -79,8 +79,8 @@ public class MainAirDesk extends ActionBarActivity {
         }
 
 
-        listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values);
-        listAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, values2);
+        listAdapter = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values);
+        listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
 
         //values = datasource.getAllComments();
         //listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_expandable_list_item_1, values);

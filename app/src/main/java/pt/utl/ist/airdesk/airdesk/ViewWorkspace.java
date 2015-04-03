@@ -58,7 +58,7 @@ public class ViewWorkspace extends ActionBarActivity {
             }
         }
 
-        listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, filesList);
+        listAdapter = new ArrayAdapter<String>(this, R.layout.mylistfile ,R.id.Itemname, filesList);
         listView.setAdapter(listAdapter);
         Log.v("caminho",path);
         editText.setText(name, TextView.BufferType.EDITABLE);
