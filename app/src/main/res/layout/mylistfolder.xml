@@ -13,11 +13,11 @@
         android:src="@mipmap/folder_blue" />
     <TextView
         android:id="@+id/ItemnameFolder"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:hint="asdas"
         android:width="100dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:paddingTop="5dp"/>
 </LinearLayout>
