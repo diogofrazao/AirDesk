@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,9 +32,27 @@ public class CreateFile extends ActionBarActivity {
         path = intent.getStringExtra("path");
 
         entryText = (EditText) findViewById(R.id.editTextCreateFile);
+        Log.d("Files", "Path: " + path);
+
+        java.io.File file = new java.io.File("/storage/emulated/0/g");
+
+        long length = folderSize(file);
+
+        Log.d("TAMANHOOO", "TAMANHO: " + length);
+
+    }
 
 
 
+    public static long folderSize(File directory) {
+        long length = 0;
+        for (File file : directory.listFiles()) {
+            if (file.isFile())
+                length += file.length();
+            else
+                length += folderSize(file);
+        }
+        return length;
     }
 
     public void onClickSaveFile(View view){
