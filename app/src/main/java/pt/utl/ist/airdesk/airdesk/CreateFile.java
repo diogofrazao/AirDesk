@@ -34,17 +34,17 @@ public class CreateFile extends ActionBarActivity {
         entryText = (EditText) findViewById(R.id.editTextCreateFile);
         Log.d("Files", "Path: " + path);
 
-        java.io.File file = new java.io.File("/storage/emulated/0/g");
+        //java.io.File file = new java.io.File("/storage/emulated/0/g");
 
-        long length = folderSize(file);
+        //long length = folderSize(file);
 
-        Log.d("TAMANHOOO", "TAMANHO: " + length);
+        //Log.d("TAMANHOOO", "TAMANHO: " + length);
 
     }
 
 
 
-    public static long folderSize(File directory) {
+   /* public static long folderSize(File directory) {
         long length = 0;
         for (File file : directory.listFiles()) {
             if (file.isFile())
@@ -53,7 +53,7 @@ public class CreateFile extends ActionBarActivity {
                 length += folderSize(file);
         }
         return length;
-    }
+    } */
 
     public void onClickSaveFile(View view){
     if(entryText.getText().toString().isEmpty()){
