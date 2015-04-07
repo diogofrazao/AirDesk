@@ -35,6 +35,10 @@ public class LoginPage extends ActionBarActivity {
         datasource = new UsersDataSource(this);
         datasource.open();
 
+
+
+
+
         loginText = (EditText) findViewById(R.id.loginText);
         go = (Button) findViewById(R.id.go);
         SignupButton = (Button) findViewById(R.id.SignupButton);
@@ -46,6 +50,8 @@ public class LoginPage extends ActionBarActivity {
 
                 String estaNaBd;
                 String login = loginText.getText().toString();
+                datasource.getId(login);
+
                 estaNaBd = datasource.userOnTable(login);
 
 

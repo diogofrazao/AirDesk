@@ -23,6 +23,8 @@ public class ViewFile extends ActionBarActivity {
     EditText fileTextView;
     String fileName;
     String path;
+    String ambiente;
+    String permission;
     Button editFile;
     Button saveFile;
     File file;
@@ -38,6 +40,8 @@ public class ViewFile extends ActionBarActivity {
         Intent intent = getIntent();
         fileName = intent.getStringExtra("fileName");
         path = intent.getStringExtra("path");
+        ambiente = intent.getStringExtra("ambiente");
+        permission = intent.getStringExtra("permission");
 
         fileNameView.setText(fileName, TextView.BufferType.EDITABLE);
 
@@ -68,9 +72,16 @@ public class ViewFile extends ActionBarActivity {
 
 
     public void onClickEdit(View view){
-        fileTextView.setEnabled(true);
-        fileTextView.setClickable(true);
-        saveFile.setEnabled(true);
+
+        if(ambiente.equals("local") || permission.equals("rw")) {
+            fileTextView.setEnabled(true);
+            fileTextView.setClickable(true);
+            saveFile.setEnabled(true);
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Nao tem permissao!",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
 

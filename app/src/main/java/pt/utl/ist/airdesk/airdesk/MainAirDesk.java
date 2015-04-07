@@ -96,6 +96,7 @@ public class MainAirDesk extends ActionBarActivity {
                 Intent intent = new Intent(MainAirDesk.this, ViewWorkspace.class);
                 intent.putExtra("wsName",values.get(position));
                 intent.putExtra("login",login);
+                intent.putExtra("ambiente","local");
                 startActivity(intent);
             }
         });
@@ -103,9 +104,13 @@ public class MainAirDesk extends ActionBarActivity {
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String owner;
                 Intent intent = new Intent(MainAirDesk.this, ViewWorkspace.class);
+                owner = datasource.getOwner(values2.get(position));
                 intent.putExtra("wsName",values2.get(position));
-                intent.putExtra("login",login);
+                intent.putExtra("login",owner);
+                intent.putExtra("ambiente","publico");
+
                 startActivity(intent);
             }
         });
@@ -126,7 +131,7 @@ public class MainAirDesk extends ActionBarActivity {
 
                 Intent intent = new Intent(MainAirDesk.this, CreateWorkSpace.class);
                 intent.putExtra("login",login);
-                Log.v("VE SO O LOGIN", login);
+
                 startActivityForResult(intent, 1);
 
             }

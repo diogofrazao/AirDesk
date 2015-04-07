@@ -18,6 +18,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PATH = "path";
     public static final String COLUMN_OWNER = "owner";
     public static final String COLUMN_ID = "id";
+    public static final String COLUMN_USERS = "users";
+    public static final String COLUMN_PERMISSION = "permission";
 
 
     public static final String TABLE_USERS = "users";
@@ -31,6 +33,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + " text not null, " + COLUMN_STORAGE
             + " text not null, " + COLUMN_PATH
             + " text not null, " + COLUMN_OWNER
+            + " text not null, " + COLUMN_USERS
+            + " text not null, " + COLUMN_PERMISSION
             + " text not null);";
 
 

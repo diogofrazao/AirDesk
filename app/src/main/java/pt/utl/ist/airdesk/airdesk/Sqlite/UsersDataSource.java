@@ -96,6 +96,8 @@ public class UsersDataSource {
 
 
 
+
+
     public void resetDatabase(){
         dbHelper.onUpgrade(database,1,2);
     }
@@ -108,5 +110,21 @@ public class UsersDataSource {
         comment.setName(cursor.getString(1));
 
         return comment;
+    }
+
+    public void getId(String login){
+        String aTable = "users";
+        String aColumn[] = {"name"};
+
+
+        Cursor cursor = database.rawQuery("SELECT id FROM users WHERE name='"+login+"'", null);
+
+
+        while(cursor.moveToNext()){
+            Log.d("userslOLOLOLO:", cursor.getString(0));
+
+        }
+
+
     }
 }

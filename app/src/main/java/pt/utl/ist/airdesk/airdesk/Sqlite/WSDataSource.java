@@ -21,7 +21,7 @@ public class WSDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID , MySQLiteHelper.COLUMN_NAMEWS,
-            MySQLiteHelper.COLUMN_STORAGE, MySQLiteHelper.COLUMN_PATH, MySQLiteHelper.COLUMN_OWNER };
+            MySQLiteHelper.COLUMN_STORAGE, MySQLiteHelper.COLUMN_PATH, MySQLiteHelper.COLUMN_OWNER, MySQLiteHelper.COLUMN_USERS, MySQLiteHelper.COLUMN_PERMISSION };
 
     public WSDataSource(Context context) {
 
@@ -38,7 +38,7 @@ public class WSDataSource {
         dbHelper.close();
     }
 
-    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, String storage, String path, String owner) {
+    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, String storage, String path, String owner, String users, String permission) {
 
 
         ContentValues values = new ContentValues();
@@ -46,6 +46,8 @@ public class WSDataSource {
         values.put(MySQLiteHelper.COLUMN_STORAGE, storage);
         values.put(MySQLiteHelper.COLUMN_PATH, path);
         values.put(MySQLiteHelper.COLUMN_OWNER, owner);
+        values.put(MySQLiteHelper.COLUMN_USERS, users);
+        values.put(MySQLiteHelper.COLUMN_PERMISSION, permission);
 
         long insertId = database.insert(MySQLiteHelper.TABLE_WS, null,
                 values);
@@ -93,7 +95,7 @@ public class WSDataSource {
         ArrayList<String> list = new ArrayList<String>();
 //ss
 
-        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE storage='"+login+"'", null);
+        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE users='"+login+"'", null);
 
 
         while(cursor.moveToNext()){
@@ -106,6 +108,60 @@ public class WSDataSource {
 
 
         return list;
+    }
+
+    public void getId(String login){
+        String aTable = "ws";
+        String aColumn[] = {"nameWs"};
+
+
+        Cursor cursor = database.rawQuery("SELECT id FROM ws WHERE users='"+login+"'", null);
+
+
+        while(cursor.moveToNext()){
+            Log.d("ficheiros:", cursor.getString(0));
+
+        }
+
+
+    }
+
+    public String getOwner(String workspace){
+        String aTable = "ws";
+        String aColumn[] = {"nameWs"};
+
+        String owner = "lol";
+
+
+        Cursor cursor = database.rawQuery("SELECT owner FROM ws WHERE nameWs='"+workspace+"'", null);
+
+
+        while(cursor.moveToNext()){
+           owner = cursor.getString(0);
+
+        }
+
+       return owner;
+
+    }
+
+    public String getPermission(String workspace, String user){
+        String aTable = "ws";
+        String aColumn[] = {"nameWs"};
+
+        String permission = "lol";
+
+
+        Cursor cursor = database.rawQuery("SELECT permission FROM ws WHERE nameWs='"+workspace+"'", null);
+
+
+        while(cursor.moveToNext()){
+            permission = cursor.getString(0);
+
+        }
+
+        return permission;
+
     }
 
 
@@ -127,6 +183,8 @@ public class WSDataSource {
         comment.setPath(cursor.getString(3));
         Log.v("conadamae","cursor4");
         comment.setPath(cursor.getString(4));
+        comment.setUsers(cursor.getString(4));
+        comment.setPermission(cursor.getString(5));
         return comment;
     }
 }

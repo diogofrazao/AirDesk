@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -26,8 +27,10 @@ public class CreateWorkSpace extends ActionBarActivity {
     EditText workspaceNameEntry;
     EditText workspaceDimensionEntry;
     EditText workspaceUsers;
+    CheckBox checkbox;
     String login;
     private WSDataSource datasource;
+    String permission = "r";
 
     //dsfsdf
 
@@ -48,14 +51,21 @@ public class CreateWorkSpace extends ActionBarActivity {
 
         workspaceButtonCreate = (Button) findViewById(R.id.workspaceButtonCreate);
 
+        checkbox = (CheckBox) findViewById(R.id.checkBox);
+
+
 
         workspaceButtonCreate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
+                if (checkbox.isChecked()) {
+                    permission = "rw";
+                }
 
-                String str = workspaceNameEntry .getText().toString();
+
+                    String str = workspaceNameEntry .getText().toString();
                 String str2 = workspaceDimensionEntry.getText().toString();
                 WorkspaceRepresentation workspaceRepresentation = null;
 
@@ -81,7 +91,7 @@ public class CreateWorkSpace extends ActionBarActivity {
                     intent2.putExtra("contents",str2);
                     if(!workspaceUsers.getText().toString().equals(null)){
                         Log.v("teste", "PASSSOU");
-                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, user, path, login);
+                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, "lol", path, login, user, permission);
                     }
 
                     setResult(RESULT_OK,intent2);

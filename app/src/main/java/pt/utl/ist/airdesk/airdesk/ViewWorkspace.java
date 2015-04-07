@@ -23,6 +23,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import pt.utl.ist.airdesk.airdesk.Sqlite.UsersDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
+
 
 public class ViewWorkspace extends ActionBarActivity {
 
@@ -32,6 +35,11 @@ public class ViewWorkspace extends ActionBarActivity {
     ArrayAdapter<String> listAdapter;
     String path;
     File f;
+    private WSDataSource datasource;
+    String permission;
+    String workspace;
+    String loginWorkspace;
+    String ambiente;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +50,15 @@ public class ViewWorkspace extends ActionBarActivity {
         filesList = new ArrayList<String>();
         Intent intent = getIntent();
         final String name = intent.getStringExtra("wsName");
+        final String name2 = intent.getStringExtra("ambiente");
+        ambiente = name2;
+        workspace = name;
         final String login = intent.getStringExtra("login");
         //listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, filesList);
        // listView.setAdapter(listAdapter);
+
+        datasource = new WSDataSource(this);
+        datasource.open();
 
        path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+name;
         f = new File(path);
@@ -68,9 +82,12 @@ public class ViewWorkspace extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                permission = datasource.getPermission(workspace, loginWorkspace);
                 Intent intent = new Intent(ViewWorkspace.this,ViewFile.class);
                 intent.putExtra("fileName",filesList.get(position));
                 intent.putExtra("path",path);
+                intent.putExtra("ambiente",ambiente);
+                intent.putExtra("permission",permission);
                 startActivity(intent);
             }
         });
@@ -120,9 +137,32 @@ public class ViewWorkspace extends ActionBarActivity {
     }
 
     public void onClickCreateFile(View view){
-        Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
-        createFile.putExtra("path", path);
-        startActivityForResult(createFile,1);
+
+        permission = datasource.getPermission(workspace, loginWorkspace);
+        Log.v("PERMISSAAAO", permission);
+        Log.v("ambiente", ambiente);
+
+        if(ambiente.equals("local")) {
+            Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
+            createFile.putExtra("path", path);
+            startActivityForResult(createFile,1);
+        }
+        else if(ambiente.equals("publico") && permission.equals("rw")) {
+            Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
+            createFile.putExtra("path", path);
+            startActivityForResult(createFile,1);
+
+        }
+
+        else{
+            Toast.makeText(getApplicationContext(), "Nao tem permissao!",
+                    Toast.LENGTH_LONG).show();
+        }
+
+
+
+
+
     }
 
     @Override
