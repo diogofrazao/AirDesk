@@ -38,7 +38,7 @@ public class WSDataSource {
         dbHelper.close();
     }
 
-    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, String storage, String path, String owner, String users, String permission) {
+    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, int storage, String path, String owner, String users, String permission) {
 
 
         ContentValues values = new ContentValues();

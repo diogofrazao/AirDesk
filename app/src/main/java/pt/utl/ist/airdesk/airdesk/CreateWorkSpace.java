@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -31,6 +34,9 @@ public class CreateWorkSpace extends ActionBarActivity {
     String login;
     private WSDataSource datasource;
     String permission = "r";
+    SeekBar seekBar;
+    Long sdcard;
+    int lastProgress;
 
     //dsfsdf
 
@@ -42,6 +48,7 @@ public class CreateWorkSpace extends ActionBarActivity {
         datasource = new WSDataSource(this);
         datasource.open();
 
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         workspaceNameEntry = (EditText) findViewById(R.id.workspaceNameEntry);
 
@@ -53,7 +60,7 @@ public class CreateWorkSpace extends ActionBarActivity {
 
         checkbox = (CheckBox) findViewById(R.id.checkBox);
 
-
+        sdcard = Environment.getExternalStorageDirectory().getFreeSpace();
 
         workspaceButtonCreate.setOnClickListener(new View.OnClickListener() {
 
@@ -83,15 +90,17 @@ public class CreateWorkSpace extends ActionBarActivity {
                 Log.v("PATHHHHHHH", path);
 
                 File root = new File(Environment.getExternalStorageDirectory() + "/"+login, str);
-                Long sdcard = Environment.getExternalStorageDirectory().length();
-                Log.v("sdcard size",sdcard.toString());
+
+                Log.v("sdcard size",sdcard+"");
+                seekBar.setMax(sdcard.intValue());
+                Log.v("dimensao",Long.parseLong(workspaceDimensionEntry.getText().toString())+"");
                 if (!root.exists()) {
                     root.mkdirs();
                     intent2.putExtra("titles",str);
                     intent2.putExtra("contents",str2);
                     if(!workspaceUsers.getText().toString().equals(null)){
                         Log.v("teste", "PASSSOU");
-                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, "lol", path, login, user, permission);
+                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str,lastProgress, path, login, user, permission);
                     }
 
                     setResult(RESULT_OK,intent2);
@@ -102,6 +111,45 @@ public class CreateWorkSpace extends ActionBarActivity {
                 }
            }
 
+        });
+
+        seekBar.setMax(0);
+        seekBar.setMax(sdcard.intValue()/(1024*1024));
+        seekBar.setProgress(50);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressChanged = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Toast.makeText(CreateWorkSpace.this, "seek bar progress:" + progressChanged,
+                        Toast.LENGTH_SHORT).show();
+                workspaceDimensionEntry.setText(progressChanged+"");
+                lastProgress = progressChanged;
+            }
+        });
+
+        workspaceDimensionEntry.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                try {
+                    int i = Integer.parseInt(s.toString());
+                    if (i >= 0 && i <= sdcard / (1024 * 1024)) {
+                        seekBar.setProgress(i); // This ensures 0-120 value for seekbar
+                    } else setProgress(seekBar.getMax());
+                } catch (NumberFormatException e) {
+                    seekBar.setProgress(0);
+                }
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
 
