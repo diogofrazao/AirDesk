@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class RegisterPage extends ActionBarActivity {
     Button RegisterButton;
     private UsersDataSource datasource;
     EditText registerBox;
+    String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,22 +48,19 @@ public class RegisterPage extends ActionBarActivity {
 
                 String str = registerBox.getText().toString();
 
-                usersRepresentation = datasource.createUsersRepresentation(str);
 
-                comments = datasource.getAllComments();
-                String debug = comments.get(0).getName();
+                if(datasource.userOnTable(str)==false) {
+                    usersRepresentation = datasource.createUsersRepresentation(str);
 
-                Log.d("USERS:", debug);
-
+                    Intent intent = new Intent(RegisterPage.this, LoginPage.class);
 
 
-
-
-
-                Intent intent = new Intent(RegisterPage.this, LoginPage.class);
-
-
-                startActivity(intent);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Username usado!",
+                            Toast.LENGTH_LONG).show();
+                }
 
             }
 

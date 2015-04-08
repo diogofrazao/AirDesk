@@ -50,13 +50,11 @@ public class LoginPage extends ActionBarActivity {
 
                 String estaNaBd;
                 String login = loginText.getText().toString();
-                datasource.getId(login);
-
-                estaNaBd = datasource.userOnTable(login);
 
 
 
-                    if(estaNaBd.equals("sim")){
+
+                    if(datasource.userOnTable(login)==true){
                         File root = new File(Environment.getExternalStorageDirectory(), login);
                         if (!root.exists())
                             root.mkdirs();
@@ -65,11 +63,9 @@ public class LoginPage extends ActionBarActivity {
                         startActivity(intent);
                         }
 
-
-                if(estaNaBd.equals("nao")){
-                        Toast.makeText(getApplicationContext(), "Utilizador inválido!", Toast.LENGTH_SHORT).show();
-
-                }
+                    else{
+                        Toast.makeText(getApplicationContext(), "Wrong Username!", Toast.LENGTH_SHORT).show();
+                    }
 
 
 
