@@ -39,6 +39,7 @@ public class LoginPage extends ActionBarActivity {
 
 
 
+
         loginText = (EditText) findViewById(R.id.loginText);
         go = (Button) findViewById(R.id.go);
         SignupButton = (Button) findViewById(R.id.SignupButton);

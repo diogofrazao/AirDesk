@@ -54,10 +54,9 @@
         android:layout_height="wrap_content"
         android:text="Create"
         android:id="@+id/workspaceButtonCreate"
-        android:layout_below="@+id/workspaceUsers"
-        android:layout_alignLeft="@+id/workspaceUsers"
-        android:layout_alignStart="@+id/workspaceUsers"
-        android:layout_marginTop="76dp" />
+        android:layout_below="@+id/checkBox"
+        android:layout_alignRight="@+id/checkBox"
+        android:layout_alignEnd="@+id/checkBox" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -93,7 +92,7 @@
         android:text="Escrever"
         android:id="@+id/checkBox"
         android:checked="false"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/textView5"
         android:layout_alignLeft="@+id/textView5"
         android:layout_alignStart="@+id/textView5" />
 
