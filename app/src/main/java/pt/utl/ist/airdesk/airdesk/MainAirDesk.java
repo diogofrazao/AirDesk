@@ -1,5 +1,7 @@
 package pt.utl.ist.airdesk.airdesk;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -68,7 +70,7 @@ public class MainAirDesk extends ActionBarActivity {
 
 
 
-        String path = Environment.getExternalStorageDirectory().toString()+"/"+login;
+        final String path = Environment.getExternalStorageDirectory().toString()+"/"+login;
         Log.d("Files", "Path: " + path);
         File f = new File(path);
         File file[] = f.listFiles();
@@ -114,6 +116,64 @@ public class MainAirDesk extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                final AlertDialog.Builder alert = new AlertDialog.Builder(MainAirDesk.this);
+
+                alert.setTitle("Delete file");
+                alert.setMessage("Do you want to delete file?");
+
+// Set an EditText view to get user input
+
+
+                alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        String pathDir = path+"/"+values.get(position).toString();
+
+                        File dir = new File(pathDir);
+                        if (dir.isDirectory()) {
+                            String[] children = dir.list();
+                            for (int i = 0; i < children.length; i++) {
+                                new File(dir, children[i]).delete();
+                            }
+                            dir.delete();
+                        }
+
+                        //checks if it´s a shared workspace and deletes it from database
+                        String ifExistsShared = datasource.workSpaceOnTable(values.get(position).toString());
+
+                        if(!(ifExistsShared==null )){
+                            datasource.deleteWorkspaceEntry(values.get(position).toString());
+                            values2.remove(values.get(position).toString());
+                            //values2 = datasource.GetAllValues(login);
+                            listAdapter2.notifyDataSetChanged();
+                        }
+
+                        values.remove(position);
+                        listAdapter.notifyDataSetChanged();
+
+                        dialog.dismiss();
+
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+
+                alert.show();
+                return true;
+            }
+        });
+
+
 
 
         button.setOnClickListener(new View.OnClickListener() {

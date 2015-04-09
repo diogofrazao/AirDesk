@@ -98,10 +98,10 @@ public class CreateWorkSpace extends ActionBarActivity {
                     root.mkdirs();
                     intent2.putExtra("titles",str);
                     intent2.putExtra("contents",str2);
-                    if(!workspaceUsers.getText().toString().equals(null)){
+
                         Log.v("teste", "PASSSOU");
                         workspaceRepresentation = datasource.createWorkspaceRepresentation(str,lastProgress, path, login, user, permission);
-                    }
+
 
                     setResult(RESULT_OK,intent2);
                     finish();
@@ -113,9 +113,8 @@ public class CreateWorkSpace extends ActionBarActivity {
 
         });
 
-        seekBar.setMax(0);
         seekBar.setMax(sdcard.intValue()/(1024*1024));
-        seekBar.setProgress(50);
+        //seekBar.setProgress(50);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressChanged = 0;
@@ -135,6 +134,8 @@ public class CreateWorkSpace extends ActionBarActivity {
                 lastProgress = progressChanged;
             }
         });
+
+
 
         workspaceDimensionEntry.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {

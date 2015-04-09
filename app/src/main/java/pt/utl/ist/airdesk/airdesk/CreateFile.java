@@ -17,12 +17,17 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
+
 
 public class CreateFile extends ActionBarActivity {
 
     String path;
     EditText entryText;
+    private WSDataSource datasource;
     final Context context = this;
+    String workspace;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +35,7 @@ public class CreateFile extends ActionBarActivity {
         setContentView(R.layout.activity_create_file);
         Intent intent = getIntent();
         path = intent.getStringExtra("path");
-
+        workspace = intent.getStringExtra("wsName");
         entryText = (EditText) findViewById(R.id.editTextCreateFile);
         Log.d("Files", "Path: " + path);
 
@@ -40,11 +45,14 @@ public class CreateFile extends ActionBarActivity {
 
         //Log.d("TAMANHOOO", "TAMANHO: " + length);
 
+        datasource = new WSDataSource(this);
+        datasource.open();
+
     }
 
 
 
-   /* public static long folderSize(File directory) {
+    public static long folderSize(File directory) {
         long length = 0;
         for (File file : directory.listFiles()) {
             if (file.isFile())
@@ -53,7 +61,7 @@ public class CreateFile extends ActionBarActivity {
                 length += folderSize(file);
         }
         return length;
-    } */
+    }
 
     public void onClickSaveFile(View view){
     if(entryText.getText().toString().isEmpty()){
@@ -68,32 +76,9 @@ public class CreateFile extends ActionBarActivity {
 
         alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String value = input.getText().toString();
-                if(value.isEmpty()){
-                    Toast.makeText(CreateFile.this, "Cannot save file without name", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-                else {
-                    try
-                    {
-                        File f = new File(path);
-                        File file = new File(f,value);
-                        FileWriter writer = new FileWriter(file);
-                        writer.append(entryText.getText().toString());
-                        writer.flush();
-                        writer.close();
-                        Toast.makeText(CreateFile.this, "Saved", Toast.LENGTH_SHORT).show();
-                        Intent intent2 = new Intent(CreateFile.this, ViewWorkspace.class);
-                        setResult(RESULT_OK,intent2);
-                        finish();
-                    }
-                    catch(IOException e)
-                    {
-                        e.printStackTrace();
-                        //importError = e.getMessage();
-                        // iError();
-                    }
-                }
+
+                saveFile(dialog, input);
+
             }
         });
 
@@ -117,32 +102,9 @@ public class CreateFile extends ActionBarActivity {
 
         alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String value = input.getText().toString();
-                if(value.isEmpty()){
-                    Toast.makeText(CreateFile.this, "Cannot save file without name", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-                else {
-                    try
-                    {
-                        File f = new File(path);
-                        File file = new File(f,value);
-                        FileWriter writer = new FileWriter(file);
-                        writer.append(entryText.getText().toString());
-                        writer.flush();
-                        writer.close();
-                        Toast.makeText(CreateFile.this, "Saved", Toast.LENGTH_SHORT).show();
-                        Intent intent2 = new Intent(CreateFile.this, ViewWorkspace.class);
-                        setResult(RESULT_OK,intent2);
-                        finish();
-                    }
-                    catch(IOException e)
-                    {
-                        e.printStackTrace();
-                        //importError = e.getMessage();
-                        // iError();
-                    }
-                }
+
+                saveFile(dialog,input);
+
             }
         });
 
@@ -155,6 +117,55 @@ public class CreateFile extends ActionBarActivity {
         alert.show();
 
     }
+    }
+
+    public void saveFile(DialogInterface dialog, EditText input){
+
+        String value = input.getText().toString();
+        if(value.isEmpty()){
+            Toast.makeText(CreateFile.this, "Cannot save file without name", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        }
+        else {
+            try
+            {
+                File f = new File(path);
+                File file = new File(f,value);
+                FileWriter writer = new FileWriter(file);
+                writer.append(entryText.getText().toString());
+                writer.flush();
+                writer.close();
+
+                long dirSize = folderSize(f);
+
+                //long fileSize =file.length();
+
+                Log.d("filesize",dirSize+"");
+
+                Intent intent2 = new Intent(CreateFile.this, ViewWorkspace.class);
+
+//                if(dirSize> 0){
+                        if(dirSize/(1024*1024)> datasource.getWorkspaceStorage(workspace)){
+                    Toast.makeText(CreateFile.this, "File not saved - quota exceeded", Toast.LENGTH_SHORT).show();
+                    file.delete();
+                    setResult(RESULT_CANCELED,intent2);
+
+                }else{
+                    Toast.makeText(CreateFile.this, "Saved", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK,intent2);
+
+                }
+
+                finish();
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+                //importError = e.getMessage();
+                // iError();
+            }
+        }
+
     }
 
     @Override

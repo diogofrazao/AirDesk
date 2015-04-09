@@ -145,6 +145,62 @@ public class WSDataSource {
 
     }
 
+    public void deleteWorkspaceEntry(String workspace){
+
+
+
+        database.delete(MySQLiteHelper.TABLE_WS, MySQLiteHelper.COLUMN_NAMEWS
+                + "=" + "'"+workspace+"'", null);
+
+        //database.rawQuery("DELETE FROM ws WHERE nameWs='"+workspace+"'", null);
+
+        //if(!(cursor==null)){
+        //    return true;
+        //}
+        //else{return false;}
+    }
+
+    public String workSpaceOnTable(String workspace){
+        String aTable = "ws";
+        String aColumn[] = {"nameWs"};
+
+        String ws = null;
+
+        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE nameWs='"+workspace+"'", null);
+
+        while(cursor.moveToNext()){
+            ws = cursor.getString(0);
+
+        }
+
+        return ws;
+
+    }
+
+    public void updateUser(String user, String workspace){
+        String strSQL = "UPDATE ws SET users ='"+user+"'"+ "WHERE nameWs='"+workspace+"'";
+
+        database.execSQL(strSQL);
+
+
+    }
+
+    public int getWorkspaceStorage(String workspace){
+
+        Cursor st = database.rawQuery("SELECT storage FROM ws WHERE nameWs='"+workspace+"'", null);
+        int stInt;
+        String storage=null;
+
+        while(st.moveToNext()){
+            storage = st.getString(0);
+        }
+
+        stInt= Integer.parseInt(storage);
+        Log.d("tamanho",stInt+"");
+
+        return stInt;
+    }
+
     public String getPermission(String workspace, String user){
         String aTable = "ws";
         String aColumn[] = {"nameWs"};

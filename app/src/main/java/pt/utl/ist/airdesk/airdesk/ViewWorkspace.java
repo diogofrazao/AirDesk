@@ -88,6 +88,7 @@ public class ViewWorkspace extends ActionBarActivity {
                 intent.putExtra("path",path);
                 intent.putExtra("ambiente",ambiente);
                 intent.putExtra("permission",permission);
+                intent.putExtra("wsName",workspace);
                 startActivity(intent);
             }
         });
@@ -144,11 +145,13 @@ public class ViewWorkspace extends ActionBarActivity {
 
         if(ambiente.equals("local")) {
             Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
+            createFile.putExtra("wsName", workspace);
             createFile.putExtra("path", path);
             startActivityForResult(createFile,1);
         }
         else if(ambiente.equals("publico") && permission.equals("rw")) {
             Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
+            createFile.putExtra("wsName", workspace);
             createFile.putExtra("path", path);
             startActivityForResult(createFile,1);
 
@@ -165,6 +168,42 @@ public class ViewWorkspace extends ActionBarActivity {
 
     }
 
+    public void onClickInviteUser(View view) {
+        if(ambiente.equals("publico")){
+            Toast.makeText(getApplicationContext(), "Nao tem permissao!",
+                    Toast.LENGTH_LONG).show();
+        }
+else {
+            final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+            alert.setTitle("Invite user");
+            alert.setMessage("Name of the user");
+
+            final EditText input = new EditText(this);
+            alert.setView(input);
+
+            alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+
+                   datasource.updateUser(input.getText().toString(),workspace );
+                    Toast.makeText(getApplicationContext(), "workspace shared with " + input.getText().toString(),
+                            Toast.LENGTH_LONG).show();
+
+                }
+            });
+
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.dismiss();
+                }
+            });
+
+            alert.show();
+
+        }
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -173,6 +212,7 @@ public class ViewWorkspace extends ActionBarActivity {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                filesList.clear();
