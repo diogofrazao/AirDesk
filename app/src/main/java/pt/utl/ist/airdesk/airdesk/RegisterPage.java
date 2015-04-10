@@ -22,10 +22,10 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 public class RegisterPage extends ActionBarActivity {
 
-    Button RegisterButton;
+    private Button RegisterButton;
     private UsersDataSource datasource;
-    EditText registerBox;
-    String user;
+    private EditText registerBox;
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

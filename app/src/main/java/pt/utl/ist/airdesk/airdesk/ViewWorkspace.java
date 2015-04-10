@@ -30,16 +30,16 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 public class ViewWorkspace extends ActionBarActivity {
 
 
-    GridView listView;
-    ArrayList<String> filesList;
-    ArrayAdapter<String> listAdapter;
+    private GridView listView;
+    private ArrayList<String> filesList;
+    private ArrayAdapter<String> listAdapter;
     String path;
     File f;
     private WSDataSource datasource;
-    String permission;
-    String workspace;
-    String loginWorkspace;
-    String ambiente;
+    private String permission;
+    private String workspace;
+    private String loginWorkspace;
+    private String ambiente;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +63,15 @@ public class ViewWorkspace extends ActionBarActivity {
        path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+name;
         f = new File(path);
         File file[] = f.listFiles();
-//        String tamanho = Integer.toString(file.length);
 
- //       Log.v("tamanho",tamanho);
         if(!(file == null)) {
             for (int i = 0; i < file.length; i++) {
                 filesList.add(file[i].getName());
-                Log.v("file", file[i].getName());
             }
         }
 
         listAdapter = new ArrayAdapter<String>(this, R.layout.mylistfile ,R.id.Itemname, filesList);
         listView.setAdapter(listAdapter);
-        Log.v("caminho",path);
         editText.setText(name, TextView.BufferType.EDITABLE);
 
 
@@ -114,7 +110,6 @@ public class ViewWorkspace extends ActionBarActivity {
                         if(!(file == null)) {
                             for (int i = 0; i < file.length; i++) {
                                 filesList.add(file[i].getName());
-                                Log.v("file", file[i].getName());
                             }
                         }
                         listAdapter.notifyDataSetChanged();
@@ -140,8 +135,6 @@ public class ViewWorkspace extends ActionBarActivity {
     public void onClickCreateFile(View view){
 
         permission = datasource.getPermission(workspace, loginWorkspace);
-        Log.v("PERMISSAAAO", permission);
-        Log.v("ambiente", ambiente);
 
         if(ambiente.equals("local")) {
             Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
@@ -220,7 +213,6 @@ else {
                 if(!(file == null)) {
                     for (int i = 0; i < file.length; i++) {
                         filesList.add(file[i].getName());
-                        Log.v("file", file[i].getName());
                     }
                 }
                 listAdapter.notifyDataSetChanged();

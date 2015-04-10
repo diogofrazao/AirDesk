@@ -22,11 +22,11 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 
 public class CreateFile extends ActionBarActivity {
 
-    String path;
-    EditText entryText;
+    private String path;
+    private EditText entryText;
     private WSDataSource datasource;
     final Context context = this;
-    String workspace;
+    private String workspace;
 
 
     @Override
@@ -119,7 +119,7 @@ public class CreateFile extends ActionBarActivity {
     }
     }
 
-    public void saveFile(DialogInterface dialog, EditText input){
+    private void saveFile(DialogInterface dialog, EditText input){
 
         String value = input.getText().toString();
         if(value.isEmpty()){

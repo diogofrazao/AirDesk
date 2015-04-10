@@ -10,7 +10,7 @@ public class Workspace {
     private int quota;
     private String nameWorkspace;
     private String owner;
-    ArrayList<User> users;
+    private ArrayList<User> users;
     private String path;
 
     public Workspace(int quota, String nameWorkspace, String owner){

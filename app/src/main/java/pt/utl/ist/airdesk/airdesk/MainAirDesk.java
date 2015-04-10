@@ -28,18 +28,18 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 public class MainAirDesk extends ActionBarActivity {
 
-    Button button;
-    ListView listView;
-    ListView listView2;
-    ArrayList<String> listaWorkplacesPrivados;
-    ArrayAdapter<String> listAdapter;
-    ArrayAdapter<String> listAdapter2;
+    private Button button;
+    private ListView listView;
+    private ListView listView2;
+    private ArrayList<String> listaWorkplacesPrivados;
+    private ArrayAdapter<String> listAdapter;
+    private ArrayAdapter<String> listAdapter2;
     private WSDataSource datasource;
     private ArrayList<String> values;
     private ArrayList<String> values2;
-    String filename;
-    String maxSize;
-    String login;
+    private String filename;
+    private String maxSize;
+    private String login;
 
 
 
@@ -64,22 +64,16 @@ public class MainAirDesk extends ActionBarActivity {
         login = intent.getStringExtra("login");
 
         values2 = datasource.GetAllValues(login);
-
-
         values = new ArrayList<String>();
 
-
-
         final String path = Environment.getExternalStorageDirectory().toString()+"/"+login;
-        Log.d("Files", "Path: " + path);
         File f = new File(path);
         File file[] = f.listFiles();
-        Log.d("Files", "Size: "+ file.length);
+
         for (int i=0; i < file.length; i++)
         {
             values.add(file[i].getName());
         }
-
 
         listAdapter = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values);
         listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
@@ -87,10 +81,8 @@ public class MainAirDesk extends ActionBarActivity {
         //values = datasource.getAllComments();
         //listAdapter = new ArrayAdapter<WorkspaceRepresentation>(this, android.R.layout.simple_expandable_list_item_1, values);
 
-
         listView.setAdapter(listAdapter);
         listView2.setAdapter(listAdapter2);
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -183,8 +175,6 @@ public class MainAirDesk extends ActionBarActivity {
             public void onClick(View arg0) {
                 //WorkspaceRepresentation workspaceRepresentation = null;
                 String comments = "teste2";
-                Log.v("teste", "passou");
-
 
                 //workspaceRepresentation = datasource.createWorkspaceRepresentation(comments, "lol", "lol");
                 //listAdapter.add(workspaceRepresentation);
@@ -226,54 +216,12 @@ public class MainAirDesk extends ActionBarActivity {
             }
         }
 
-
-     /*   String sFileName="teste3.txt";
-        String sBody="lolol";
-
-        try
-        {
-            File root = new File(Environment.getExternalStorageDirectory(), "Notes");
-            if (!root.exists()) {
-                root.mkdirs();
-            }
-            File gpxfile = new File(root, sFileName);
-            FileWriter writer = new FileWriter(gpxfile);
-            writer.append(sBody);
-            writer.flush();
-            writer.close();
-            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-            //importError = e.getMessage();
-           // iError();
-        }
-
-*/
-
-    /*
-    public static long getFolderSize(File dir) {
-    long size = 0;
-    for (File file : dir.listFiles()) {
-        if (file.isFile()) {
-            System.out.println(file.getName() + " " + file.length());
-            size += file.length();
-        }
-        else
-            size += getFolderSize(file);
-    }
-    return size;
-}
-     */
-
-
-
     public void resetDatabase(View view){
-    datasource.resetDatabase();
-    values2.clear();
-    listAdapter2.notifyDataSetChanged();
+        datasource.resetDatabase();
+        values2.clear();
+        listAdapter2.notifyDataSetChanged();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

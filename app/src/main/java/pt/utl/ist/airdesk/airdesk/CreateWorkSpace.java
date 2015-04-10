@@ -26,17 +26,17 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 public class CreateWorkSpace extends ActionBarActivity {
 
-    Button workspaceButtonCreate;
-    EditText workspaceNameEntry;
-    EditText workspaceDimensionEntry;
-    EditText workspaceUsers;
-    CheckBox checkbox;
-    String login;
+    private Button workspaceButtonCreate;
+    private EditText workspaceNameEntry;
+    private EditText workspaceDimensionEntry;
+    private EditText workspaceUsers;
+    private CheckBox checkbox;
+    private String login;
     private WSDataSource datasource;
     String permission = "r";
-    SeekBar seekBar;
-    Long sdcard;
-    int lastProgress;
+    private SeekBar seekBar;
+    private Long sdcard;
+    private int lastProgress;
 
     //dsfsdf
 
@@ -85,30 +85,22 @@ public class CreateWorkSpace extends ActionBarActivity {
 
 
                 String user = workspaceUsers.getText().toString();
-                Log.v("USERRRRRRR", user);
                 String path = Environment.getExternalStorageDirectory()+"/"+login+"/"+str;
-                Log.v("PATHHHHHHH", path);
 
                 File root = new File(Environment.getExternalStorageDirectory() + "/"+login, str);
 
-                Log.v("sdcard size",sdcard+"");
                 seekBar.setMax(sdcard.intValue());
-                Log.v("dimensao",Long.parseLong(workspaceDimensionEntry.getText().toString())+"");
+
                 if (!root.exists()) {
                     root.mkdirs();
                     intent2.putExtra("titles",str);
                     intent2.putExtra("contents",str2);
 
-                        Log.v("teste", "PASSSOU");
-                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str,lastProgress, path, login, user, permission);
-
+                    workspaceRepresentation = datasource.createWorkspaceRepresentation(str,lastProgress, path, login, user, permission);
 
                     setResult(RESULT_OK,intent2);
                     finish();
                     }
-                else{
-                    Log.v("directorio", "directorio");
-                }
            }
 
         });
@@ -124,7 +116,6 @@ public class CreateWorkSpace extends ActionBarActivity {
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
             }
 
             public void onStopTrackingTouch(SeekBar seekBar) {

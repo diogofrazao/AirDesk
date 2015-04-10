@@ -27,16 +27,16 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 
 public class ViewFile extends ActionBarActivity {
 
-    EditText fileTextView;
-    String fileName;
-    String path;
-    String ambiente;
-    String permission;
-    Button editFile;
-    Button saveFile;
-    File file;
-    WSDataSource datasource;
-    String workspace;
+    private EditText fileTextView;
+    private String fileName;
+    private String path;
+    private String ambiente;
+    private String permission;
+    private Button editFile;
+    private Button saveFile;
+    private File file;
+    private WSDataSource datasource;
+    private String workspace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +108,6 @@ public class ViewFile extends ActionBarActivity {
             FileChannel sourceChannelRollBack = null;
             FileChannel destChannelRollback = null;
 
-            Log.d("path", path + fileName);
             File pathFile = new File(path);
             File fileTemp = new File(path+"/"+fileName+"_temp");
 

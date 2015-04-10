@@ -99,7 +99,6 @@ public class WSDataSource {
 
 
         while(cursor.moveToNext()){
-            Log.d("ficheiros:", cursor.getString(0));
             list.add(cursor.getString(0));
 
         }
@@ -228,16 +227,11 @@ public class WSDataSource {
     }
 
     private WorkspaceRepresentation cursorToComment(Cursor cursor) {
-        Log.v("conadamae","cursor1");
         WorkspaceRepresentation comment = new WorkspaceRepresentation();
-        Log.v("conadamae","cursor2");
         comment.setId(cursor.getLong(0));
         comment.setNameWs(cursor.getString(1));
-        Log.v("conadamae","cursor3");
         comment.setStorage(cursor.getString(2));
-        Log.v("conadamae","cursor4");
         comment.setPath(cursor.getString(3));
-        Log.v("conadamae","cursor4");
         comment.setPath(cursor.getString(4));
         comment.setUsers(cursor.getString(4));
         comment.setPermission(cursor.getString(5));
