@@ -119,11 +119,6 @@ public class UsersDataSource {
         Cursor cursor = database.rawQuery("SELECT id FROM users WHERE name='"+login+"'", null);
 
 
-        while(cursor.moveToNext()){
-            Log.d("userslOLOLOLO:", cursor.getString(0));
-
-        }
-
 
     }
 }

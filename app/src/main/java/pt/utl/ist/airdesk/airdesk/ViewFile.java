@@ -129,7 +129,7 @@ public class ViewFile extends ActionBarActivity {
                 sourceChannelRollBack = new FileInputStream(fileTemp).getChannel();
                 destChannelRollback =  new FileOutputStream(file).getChannel();
                 destChannelRollback.transferFrom(sourceChannelRollBack, 0, sourceChannelRollBack.size());
-                Toast.makeText(this, "RollBack", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "File not saved - quota exceeded", Toast.LENGTH_SHORT).show();
 
             }else{
                 Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();

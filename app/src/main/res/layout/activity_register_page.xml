@@ -7,7 +7,7 @@
     tools:context="pt.utl.ist.airdesk.airdesk.RegisterPage">
 
     <TextView
-        android:text="Nickname"
+        android:text="Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="116dp"

@@ -37,13 +37,7 @@ public class CreateFile extends ActionBarActivity {
         path = intent.getStringExtra("path");
         workspace = intent.getStringExtra("wsName");
         entryText = (EditText) findViewById(R.id.editTextCreateFile);
-        Log.d("Files", "Path: " + path);
 
-        //java.io.File file = new java.io.File("/storage/emulated/0/g");
-
-        //long length = folderSize(file);
-
-        //Log.d("TAMANHOOO", "TAMANHO: " + length);
 
         datasource = new WSDataSource(this);
         datasource.open();
@@ -138,13 +132,9 @@ public class CreateFile extends ActionBarActivity {
 
                 long dirSize = folderSize(f);
 
-                //long fileSize =file.length();
-
-                Log.d("filesize",dirSize+"");
 
                 Intent intent2 = new Intent(CreateFile.this, ViewWorkspace.class);
 
-//                if(dirSize> 0){
                         if(dirSize/(1024*1024)> datasource.getWorkspaceStorage(workspace)){
                     Toast.makeText(CreateFile.this, "File not saved - quota exceeded", Toast.LENGTH_SHORT).show();
                     file.delete();
@@ -161,8 +151,7 @@ public class CreateFile extends ActionBarActivity {
             catch(IOException e)
             {
                 e.printStackTrace();
-                //importError = e.getMessage();
-                // iError();
+
             }
         }
 

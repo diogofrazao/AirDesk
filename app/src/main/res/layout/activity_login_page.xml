@@ -6,10 +6,11 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="pt.utl.ist.airdesk.airdesk.LoginPage">
 
-    <TextView android:text="Insira o Username" android:layout_width="wrap_content"
+    <TextView android:text="Login" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/username"
         android:gravity="center"
+        android:textSize="30dp"
         android:layout_above="@+id/loginText"
         android:layout_centerHorizontal="true" />
 
@@ -27,6 +28,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/loginText"
         android:layout_above="@+id/go"
+        android:hint="Insert username here"
         android:gravity="center"
         android:layout_centerHorizontal="true" />
 

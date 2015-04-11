@@ -117,10 +117,6 @@ public class WSDataSource {
         Cursor cursor = database.rawQuery("SELECT id FROM ws WHERE users='"+login+"'", null);
 
 
-        while(cursor.moveToNext()){
-            Log.d("ficheiros:", cursor.getString(0));
-
-        }
 
 
     }
@@ -151,12 +147,7 @@ public class WSDataSource {
         database.delete(MySQLiteHelper.TABLE_WS, MySQLiteHelper.COLUMN_NAMEWS
                 + "=" + "'"+workspace+"'", null);
 
-        //database.rawQuery("DELETE FROM ws WHERE nameWs='"+workspace+"'", null);
 
-        //if(!(cursor==null)){
-        //    return true;
-        //}
-        //else{return false;}
     }
 
     public String workSpaceOnTable(String workspace){
@@ -195,7 +186,6 @@ public class WSDataSource {
         }
 
         stInt= Integer.parseInt(storage);
-        Log.d("tamanho",stInt+"");
 
         return stInt;
     }

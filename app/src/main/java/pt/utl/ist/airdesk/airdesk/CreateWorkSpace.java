@@ -91,21 +91,29 @@ public class CreateWorkSpace extends ActionBarActivity {
 
                 seekBar.setMax(sdcard.intValue());
 
-                if (!root.exists()) {
-                    root.mkdirs();
-                    intent2.putExtra("titles",str);
-                    intent2.putExtra("contents",str2);
 
-                    workspaceRepresentation = datasource.createWorkspaceRepresentation(str,lastProgress, path, login, user, permission);
+                if(lastProgress > 0 ) {
+                    if (!root.exists()) {
+                        root.mkdirs();
+                        intent2.putExtra("titles", str);
+                        intent2.putExtra("contents", str2);
 
-                    setResult(RESULT_OK,intent2);
-                    finish();
+                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, lastProgress, path, login, user, permission);
+
+                        setResult(RESULT_OK, intent2);
+                        finish();
                     }
+
+                }
+                else{
+                    Toast.makeText(CreateWorkSpace.this, "Mininal quota is 0",Toast.LENGTH_SHORT).show();
+                }
+
            }
 
         });
 
-        seekBar.setMax(sdcard.intValue()/(1024*1024));
+        seekBar.setMax(sdcard.intValue() / (1024 * 1024));
         //seekBar.setProgress(50);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

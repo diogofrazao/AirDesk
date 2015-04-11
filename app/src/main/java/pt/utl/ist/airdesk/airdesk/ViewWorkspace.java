@@ -151,7 +151,7 @@ public class ViewWorkspace extends ActionBarActivity {
         }
 
         else{
-            Toast.makeText(getApplicationContext(), "Nao tem permissao!",
+            Toast.makeText(getApplicationContext(), "You dont have permission!",
                     Toast.LENGTH_LONG).show();
         }
 
@@ -163,7 +163,7 @@ public class ViewWorkspace extends ActionBarActivity {
 
     public void onClickInviteUser(View view) {
         if(ambiente.equals("publico")){
-            Toast.makeText(getApplicationContext(), "Nao tem permissao!",
+            Toast.makeText(getApplicationContext(), "You dont have permission!",
                     Toast.LENGTH_LONG).show();
         }
 else {

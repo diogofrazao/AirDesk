@@ -207,10 +207,7 @@ public class MainAirDesk extends ActionBarActivity {
                     //values.add(filename);
                     //contents.add(conteudo);
                     listAdapter.notifyDataSetChanged();
-                    values2.clear();
-                    values2 = datasource.GetAllValues(login);
-                    listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
-                    listView2.setAdapter(listAdapter2);
+                    refreshForeignList();
 
                 }
             }
@@ -243,4 +240,22 @@ public class MainAirDesk extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void refreshForeignList(){
+        values2.clear();
+        values2 = datasource.GetAllValues(login);
+        listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
+        listView2.setAdapter(listAdapter2);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        refreshForeignList();
+
+
+    }
+
+
 }
