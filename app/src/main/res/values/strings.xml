@@ -12,4 +12,5 @@
     <string name="title_activity_view_workspace">ViewWorkspace</string>
     <string name="title_activity_view_file">ViewFile</string>
     <string name="title_activity_create_file">CreateFile</string>
+    <string name="port">10001</string>
 </resources>

@@ -1,10 +1,18 @@
 package pt.utl.ist.airdesk.airdesk;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,19 +25,25 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 
 public class MainAirDesk extends ActionBarActivity {
 
+    public static final String TAG = "airdesk";
     private Button button;
     private ListView listView;
     private ListView listView2;
@@ -42,8 +56,21 @@ public class MainAirDesk extends ActionBarActivity {
     private String filename;
     private String maxSize;
     private String login;
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
+    private boolean mBound = false;
+    private SimWifiP2pSocketServer mSrvSocket = null;
+    private ReceiveCommTask mComm = null;
+    private SimWifiP2pSocket mCliSocket = null;
 
+    public SimWifiP2pManager getManager() {
+        return mManager;
+    }
 
+    public SimWifiP2pManager.Channel getChannel() {
+        return mChannel;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +81,22 @@ public class MainAirDesk extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.listView);
         listView2 = (ListView) findViewById(R.id.listView2);
         listaWorkplacesPrivados = new ArrayList<String>();
+        findViewById(R.id.WifiOnButton).setOnClickListener(listenerWifiOnButton);
+        findViewById(R.id.InRangeButton).setOnClickListener(listenerInRangeButton);
 
+        // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
+
+        // register broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+        filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
+        registerReceiver(receiver, filter);
+
+
 
 
         datasource = new WSDataSource(this);
@@ -192,6 +233,42 @@ public class MainAirDesk extends ActionBarActivity {
         });
     }
 
+    private View.OnClickListener listenerWifiOnButton = new View.OnClickListener() {
+        public void onClick(View v){
+
+            Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            mBound = true;
+
+            // spawn the chat server background task
+            new IncommingCommTask().executeOnExecutor(
+                    AsyncTask.THREAD_POOL_EXECUTOR);
+
+        }
+    };
+
+    private View.OnClickListener listenerInRangeButton = new View.OnClickListener() {
+        public void onClick(View v){
+            if (mBound) {
+                mManager.requestPeers(mChannel, (SimWifiP2pManager.PeerListListener) MainAirDesk.this);
+            } else {
+                Toast.makeText(v.getContext(), "Service not bound",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private View.OnClickListener listenerInGroupButton = new View.OnClickListener() {
+        public void onClick(View v){
+            if (mBound) {
+                mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
+            } else {
+                Toast.makeText(v.getContext(), "Service not bound",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
 
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             if (requestCode == 1) {
@@ -260,5 +337,118 @@ public class MainAirDesk extends ActionBarActivity {
 
     }
 
+    public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    if (mCliSocket != null && mCliSocket.isClosed()) {
+                        mCliSocket = null;
+                    }
+                    if (mCliSocket != null) {
+                        Log.d(TAG, "Closing accepted socket because mCliSocket still active.");
+                        sock.close();
+                    } else {
+                        publishProgress(sock);
+                    }
+                } catch (IOException e) {
+                    Log.d("Error accepting socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(SimWifiP2pSocket... values) {
+            mCliSocket = values[0];
+            mComm = new ReceiveCommTask();
+
+            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
+        }
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mManager = null;
+            mChannel = null;
+            mBound = false;
+        }
+    };
+
+    public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
+        SimWifiP2pSocket s;
+
+        @Override
+        protected Void doInBackground(SimWifiP2pSocket... params) {
+            BufferedReader sockIn;
+            String st;
+
+            s = params[0];
+            try {
+                sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
+
+                while ((st = sockIn.readLine()) != null) {
+                    publishProgress(st);
+                }
+            } catch (IOException e) {
+                Log.d("Error reading socket:", e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (!s.isClosed()) {
+                try {
+                    s.close();
+                }
+                catch (Exception e) {
+                    Log.d("Error closing socket:", e.getMessage());
+                }
+            }
+            s = null;
+            if (mBound) {
+
+            } else {
+
+            }
+        }
+    }
 
 }
