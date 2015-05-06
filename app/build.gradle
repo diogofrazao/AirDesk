@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "pt.utl.ist.airdesk.airdesk"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -19,8 +19,16 @@ android {
     }
 }
 
+dependencies { compile fileTree(dir: 'libs', include: ['*.jar'])
+               compile 'com.android.support:appcompat-v7:21.0.3'
+               compile 'com.google.android.gms:play-services:6.5.87' }
+
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.google.android.gms:play-services:6.5.87'
+    compile(name:'Termite-WifiP2P-API-20150503', ext:'aar')
+}
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
 }

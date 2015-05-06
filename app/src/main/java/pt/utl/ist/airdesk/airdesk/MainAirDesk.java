@@ -1,5 +1,6 @@
 package pt.utl.ist.airdesk.airdesk;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
@@ -53,6 +55,7 @@ public class MainAirDesk extends ActionBarActivity {
         listView2 = (ListView) findViewById(R.id.listView2);
         listaWorkplacesPrivados = new ArrayList<String>();
 
+        SimWifiP2pSocketManager.Init(getApplicationContext());
 
 
         datasource = new WSDataSource(this);
