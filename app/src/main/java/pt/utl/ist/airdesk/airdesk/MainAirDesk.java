@@ -1,6 +1,8 @@
 package pt.utl.ist.airdesk.airdesk;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -9,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
@@ -41,7 +44,7 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 
-public class MainAirDesk extends ActionBarActivity {
+public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener {
 
     public static final String TAG = "airdesk";
     private Button button;
@@ -397,6 +400,27 @@ public class MainAirDesk extends ActionBarActivity {
             mBound = false;
         }
     };
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        StringBuilder peersStr = new StringBuilder();
+
+        // compile list of devices in range
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+            peersStr.append(devstr);
+        }
+
+        // display list of devices in range
+        new AlertDialog.Builder(this)
+                .setTitle("Devices in WiFi Range")
+                .setMessage(peersStr.toString())
+                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
 
     public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
