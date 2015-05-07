@@ -96,12 +96,8 @@ public class MainAirDesk extends ActionBarActivity {
         SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
         registerReceiver(receiver, filter);
 
-
-
-
         datasource = new WSDataSource(this);
         datasource.open();
-
 
         final Intent intent = getIntent();
 
@@ -114,9 +110,11 @@ public class MainAirDesk extends ActionBarActivity {
         File f = new File(path);
         File file[] = f.listFiles();
 
-        for (int i=0; i < file.length; i++)
-        {
-            values.add(file[i].getName());
+        if(file!=null) {
+
+            for (int i = 0; i < file.length; i++) {
+                values.add(file[i].getName());
+            }
         }
 
         listAdapter = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values);
