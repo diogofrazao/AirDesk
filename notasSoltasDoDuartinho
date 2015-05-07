@@ -1,0 +1,5 @@
+fazer trabalho em background:
+
+new DownloadWebpageTask().execute("http://www.google.com");
+
+

@@ -248,6 +248,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         }
     };
 
+
+
     private View.OnClickListener listenerInRangeButton = new View.OnClickListener() {
         public void onClick(View v){
             if (mBound) {
