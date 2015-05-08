@@ -43,6 +43,7 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
 
 
 public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener {
@@ -68,6 +69,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private ReceiveCommTask mComm = null;
     private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pDeviceList lastPeers;
+    StringBuilder peersStrGlobal;
 
     public SimWifiP2pManager getManager() {
         return mManager;
@@ -102,6 +104,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
         registerReceiver(receiver, filter);
+
+        peersStrGlobal = new StringBuilder();
 
         datasource = new WSDataSource(this);
         datasource.open();
@@ -257,7 +261,16 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private View.OnClickListener listenerInRangeButton = new View.OnClickListener() {
         public void onClick(View v){
             if (mBound) {
-                mManager.requestPeers(mChannel, (SimWifiP2pManager.PeerListListener) MainAirDesk.this);
+                mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
+                // display list of devices in range
+                new AlertDialog.Builder(MainAirDesk.this)
+                        .setTitle("Devices in WiFi Range")
+                        .setMessage(peersStrGlobal.toString())
+                        .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .show();
             } else {
                 Toast.makeText(v.getContext(), "Service not bound",
                         Toast.LENGTH_SHORT).show();
@@ -360,6 +373,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     SimWifiP2pSocket sock = mSrvSocket.accept();
+                    Log.v("conadamae","passou accpeted");
                     if (mCliSocket != null && mCliSocket.isClosed()) {
                         mCliSocket = null;
                     }
@@ -396,6 +410,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             mManager = new SimWifiP2pManager(mService);
             mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
             mBound = true;
+            mManager.requestPeers(mChannel,(PeerListListener) MainAirDesk.this);
         }
 
         @Override
@@ -411,6 +426,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private View.OnClickListener listenerConnectButton = new View.OnClickListener() {
         public void onClick(View v){
             StringBuilder peersStr = new StringBuilder();
+            mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
             if (mBound) {
                 for (SimWifiP2pDevice device : lastPeers.getDeviceList()) {
                     String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
@@ -435,7 +451,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             if (mBound) {
                 try {
                     Log.v("conadamae","antes");
-                    mCliSocket.getOutputStream().write(("helloworld").getBytes());
+                    mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
                     Log.v("conadamae", "depois");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -451,7 +468,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         StringBuilder peersStr = new StringBuilder();
-        lastPeers = peers;
+
         // compile list of devices in range
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
@@ -459,15 +476,9 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             peersStr.append(devstr);
         }
 
-        // display list of devices in range
-        new AlertDialog.Builder(this)
-                .setTitle("Devices in WiFi Range")
-                .setMessage(peersStr.toString())
-                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
+        peersStrGlobal = peersStr;
+        lastPeers = peers;
+
     }
 
     public class OutgoingCommTask extends AsyncTask<String, Void, String> {
@@ -520,8 +531,9 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 Log.v("conadamae","receivecomm");
                 while ((st = sockIn.readLine()) != null) {
+                    publishProgress(st);
                     Log.v("conadamae","recebi");
-                    Toast.makeText(getApplicationContext(),"recebi: " + st, Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getApplicationContext(),"recebi: " + st, Toast.LENGTH_LONG).show();
                 }
             } catch (IOException e) {
                 Log.d("Error reading socket:", e.getMessage());
@@ -538,6 +550,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         @Override
         protected void onProgressUpdate(String... values) {
             Log.v("conadamae",values[0]);
+            Toast.makeText(getApplicationContext(),"recebi: " + values[0], Toast.LENGTH_LONG).show();
+            listAdapter2.add(values[0]);
+            listAdapter.notifyDataSetChanged();
+
         }
 
         @Override
