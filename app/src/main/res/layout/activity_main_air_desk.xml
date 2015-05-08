@@ -98,5 +98,27 @@
         android:layout_alignRight="@+id/reset"
         android:layout_alignEnd="@+id/reset" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:id="@+id/ConnectButton"
+        android:layout_below="@+id/reset"
+        android:layout_alignLeft="@+id/reset"
+        android:layout_alignStart="@+id/reset"
+        android:layout_alignRight="@+id/reset"
+        android:layout_alignEnd="@+id/reset" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send"
+        android:id="@+id/SendButton"
+        android:layout_above="@+id/textView3"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
+
 
 </RelativeLayout>

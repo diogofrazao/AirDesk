@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private SimWifiP2pSocketServer mSrvSocket = null;
     private ReceiveCommTask mComm = null;
     private SimWifiP2pSocket mCliSocket = null;
+    private SimWifiP2pDeviceList lastPeers;
 
     public SimWifiP2pManager getManager() {
         return mManager;
@@ -86,6 +88,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         listaWorkplacesPrivados = new ArrayList<String>();
         findViewById(R.id.WifiOnButton).setOnClickListener(listenerWifiOnButton);
         findViewById(R.id.InRangeButton).setOnClickListener(listenerInRangeButton);
+        findViewById(R.id.ConnectButton).setOnClickListener(listenerConnectButton);
+        findViewById(R.id.SendButton).setOnClickListener(listenerSendButton);
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
@@ -403,13 +407,55 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         }
     };
 
+
+    private View.OnClickListener listenerConnectButton = new View.OnClickListener() {
+        public void onClick(View v){
+            StringBuilder peersStr = new StringBuilder();
+            if (mBound) {
+                for (SimWifiP2pDevice device : lastPeers.getDeviceList()) {
+                    String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+                    peersStr.append(devstr);
+                    String virtIp = device.getVirtIp();
+                    int virtPort = device.getVirtPort();
+                    Log.v("conadamae","virtIp: "+virtIp+" Port: "+virtPort);
+                    Toast.makeText(getApplicationContext(),"virtIp: "+virtIp+" Port: "+virtPort, Toast.LENGTH_LONG).show();
+                    new OutgoingCommTask().executeOnExecutor(
+                            AsyncTask.THREAD_POOL_EXECUTOR,
+                            virtIp);
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(),"bound = false", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+    private View.OnClickListener listenerSendButton = new View.OnClickListener() {
+        public void onClick(View v){
+            if (mBound) {
+                try {
+                    Log.v("conadamae","antes");
+                    mCliSocket.getOutputStream().write(("helloworld").getBytes());
+                    Log.v("conadamae", "depois");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(v.getContext(), "Service not bound",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         StringBuilder peersStr = new StringBuilder();
-
+        lastPeers = peers;
         // compile list of devices in range
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+            Log.v("conadamae","No onPeers->virtIp: "+device.getVirtIp()+" Port: "+device.getVirtPort());
             peersStr.append(devstr);
         }
 
@@ -424,6 +470,43 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 .show();
     }
 
+    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            Log.v("conadamae","onpreExecute");
+            Toast.makeText(getApplicationContext(),"Connecting...",Toast.LENGTH_LONG).show();
+           // mTextOutput.setText("Connecting...");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                mCliSocket = new SimWifiP2pSocket(params[0],
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (UnknownHostException e) {
+                return "Unknown Host:" + e.getMessage();
+            } catch (IOException e) {
+                return "IO error:" + e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                Log.v("conadamae","onpostExecute");
+                Toast.makeText(getApplicationContext(),"connected", Toast.LENGTH_LONG).show();
+                //mTextOutput.setText(result);
+                //findViewById(R.id.idConnectButton).setEnabled(true);
+            }
+            else {
+                mComm = new ReceiveCommTask();
+                mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,mCliSocket);
+            }
+        }
+    }
+
     public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
 
@@ -435,9 +518,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             s = params[0];
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
-
+                Log.v("conadamae","receivecomm");
                 while ((st = sockIn.readLine()) != null) {
-                    publishProgress(st);
+                    Log.v("conadamae","recebi");
+                    Toast.makeText(getApplicationContext(),"recebi: " + st, Toast.LENGTH_LONG).show();
                 }
             } catch (IOException e) {
                 Log.d("Error reading socket:", e.getMessage());
@@ -453,7 +537,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         @Override
         protected void onProgressUpdate(String... values) {
-
+            Log.v("conadamae",values[0]);
         }
 
         @Override
