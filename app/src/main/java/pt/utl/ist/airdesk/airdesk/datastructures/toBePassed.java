@@ -1,4 +1,4 @@
-package pt.utl.ist.airdesk.airdesk;
+package pt.utl.ist.airdesk.airdesk.datastructures;
 
 import java.io.Serializable;
 
@@ -6,6 +6,10 @@ import java.io.Serializable;
  * Created by duarte on 5/9/15.
  */
 public class toBePassed implements Serializable {
+
+    public toBePassed(String id) {
+        this.id = id;
+    }
 
     String id;
 
