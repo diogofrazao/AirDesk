@@ -22,7 +22,7 @@ public class WSPermissionSource {
             MySQLiteHelper.COLUMN_USER, MySQLiteHelper.COLUMN_RIGHTS};
 
 
-    public WSDataSource(Context context) {
+    public WSPermissionSource(Context context) {
 
         dbHelper = new MySQLiteHelper(context);
 
@@ -37,11 +37,11 @@ public class WSPermissionSource {
         dbHelper.close();
     }
 
-    public WSUsersPermission createWorkspaceRepresentation(String nameWs,String user, String rights) {
+    public WSUsersPermission createPermissionsRepresentation(String nameWs,String user, String rights) {
 
 
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_NAMEWS, nameWs);
+        values.put(MySQLiteHelper.COLUMN_WS, nameWs);
         values.put(MySQLiteHelper.COLUMN_USER, user);
         values.put(MySQLiteHelper.COLUMN_RIGHTS, rights);
 
@@ -54,7 +54,7 @@ public class WSPermissionSource {
                 null, null, null);
 
         cursor.moveToFirst();
-        WorkspaceRepresentation newComment = cursorToComment(cursor);
+        WSUsersPermission newComment = cursorToComment(cursor);
         cursor.close();
 
         return newComment;
@@ -67,15 +67,15 @@ public class WSPermissionSource {
                 + " = " + id, null);
     }
 
-    public List<WorkspaceRepresentation> getAllComments() {
-        List<WorkspaceRepresentation> comments = new ArrayList<WorkspaceRepresentation>();
+    public List<WSUsersPermission> getAllComments() {
+        List<WSUsersPermission> comments = new ArrayList<WSUsersPermission>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_WS,
                 allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            WorkspaceRepresentation workspaceRepresentation = cursorToComment(cursor);
+            WSUsersPermission workspaceRepresentation = cursorToComment(cursor);
             comments.add(workspaceRepresentation);
             cursor.moveToNext();
         }
@@ -104,9 +104,9 @@ public class WSPermissionSource {
                 + "=" + "'"+workspace+"'", null);
 
     }
-
+/*
     public String workSpaceOnTable(String workspace){
-        String aTable = "ws";
+        String aTable = "t";
         String aColumn[] = {"nameWs"};
 
         String ws = null;
@@ -122,31 +122,21 @@ public class WSPermissionSource {
 
     }
 
-    /*
-    public void updateUser(String user, String workspace){
-        String strSQL = "UPDATE ws SET users ='"+user+"'"+ "WHERE nameWs='"+workspace+"'";
+    */
+
+
+   /* public void updateUser(String user, String workspace){
+        String strSQL = "UPDATE tabRights SET colUsers='"+user+"'"+ "WHERE colWs='"+workspace+"'";
 
         database.execSQL(strSQL);
 
 
-    }*/
-
-    public int getWorkspaceStorage(String workspace){
-
-        Cursor st = database.rawQuery("SELECT storage FROM ws WHERE nameWs='"+workspace+"'", null);
-        int stInt;
-        String storage=null;
-
-        while(st.moveToNext()){
-            storage = st.getString(0);
-        }
-
-        stInt= Integer.parseInt(storage);
-
-        return stInt;
     }
+*/
 
-    /*
+
+
+
     public String getPermission(String workspace, String user){
         String aTable = "ws";
         String aColumn[] = {"nameWs"};
@@ -154,7 +144,7 @@ public class WSPermissionSource {
         String permission = "lol";
 
 
-        Cursor cursor = database.rawQuery("SELECT permission FROM ws WHERE nameWs='"+workspace+"'", null);
+        Cursor cursor = database.rawQuery("SELECT colRights FROM tabRights WHERE colWs='"+workspace+"'" + "AND colUser='"+user+"'", null);
 
 
         while(cursor.moveToNext()){
@@ -164,7 +154,7 @@ public class WSPermissionSource {
 
         return permission;
 
-    }*/
+    }
 
 
 

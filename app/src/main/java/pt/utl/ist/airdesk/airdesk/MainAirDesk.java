@@ -86,14 +86,12 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_air_desk);
 
-        button = (Button) findViewById(R.id.button);
-        listView = (ListView) findViewById(R.id.listView);
-        listView2 = (ListView) findViewById(R.id.listView2);
+
+        guiSetButtonListeners();
+        guiUpdateInitState();
+
         listaWorkplacesPrivados = new ArrayList<String>();
-        findViewById(R.id.WifiOnButton).setOnClickListener(listenerWifiOnButton);
-        findViewById(R.id.InRangeButton).setOnClickListener(listenerInRangeButton);
-        findViewById(R.id.ConnectButton).setOnClickListener(listenerConnectButton);
-        findViewById(R.id.SendButton).setOnClickListener(listenerSendButton);
+
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
@@ -244,6 +242,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         });
     }
 
+    /***********************************************************************************************/
+    /****************************       Listenners       *******************************************/
+    /***********************************************************************************************/
+
     private View.OnClickListener listenerWifiOnButton = new View.OnClickListener() {
         public void onClick(View v){
 
@@ -254,10 +256,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             // spawn the chat server background task
             new IncommingCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR);
+            findViewById(R.id.ConnectButton).setEnabled(true);
 
         }
     };
-
 
 
     private View.OnClickListener listenerInRangeButton = new View.OnClickListener() {
@@ -280,153 +282,9 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         }
     };
 
-    private View.OnClickListener listenerInGroupButton = new View.OnClickListener() {
-        public void onClick(View v){
-            if (mBound) {
-                mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
-            } else {
-                Toast.makeText(v.getContext(), "Service not bound",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            if (requestCode == 1) {
-                if (resultCode == RESULT_OK) {
-                    Intent intent = getIntent();
-                    //WorkspaceRepresentation workspaceRepresentation = null;
-                    String comments = "teste2";
-
-
-                    filename = data.getStringExtra("titles");
-                    maxSize = data.getStringExtra("contents");
-
-                    //workspaceRepresentation = datasource.createWorkspaceRepresentation(filename, "lol", "lol");
-                    listAdapter.add(filename);
-
-                    //values.add(filename);
-                    //contents.add(conteudo);
-                    listAdapter.notifyDataSetChanged();
-                    refreshForeignList();
-
-                }
-            }
-        }
-
-    public void resetDatabase(View view){
-        datasource.resetDatabase();
-        values2.clear();
-        listAdapter2.notifyDataSetChanged();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_air_desk, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    public void refreshForeignList(){
-        values2.clear();
-        values2 = datasource.GetAllValues(login);
-        listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
-        listView2.setAdapter(listAdapter2);
-    }
-    @Override
-    public void onResume() {
-        super.onResume();  // Always call the superclass method first
-
-        refreshForeignList();
-
-
-    }
-
-    public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
-
-            try {
-                mSrvSocket = new SimWifiP2pSocketServer(
-                        Integer.parseInt(getString(R.string.port)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
-                    Log.v("conadamae","passou accpeted");
-                    if (mCliSocket != null && mCliSocket.isClosed()) {
-                        mCliSocket = null;
-                    }
-                    if (mCliSocket != null) {
-                        Log.d(TAG, "Closing accepted socket because mCliSocket still active.");
-                        sock.close();
-                    } else {
-                        publishProgress(sock);
-                    }
-                } catch (IOException e) {
-                    Log.d("Error accepting socket:", e.getMessage());
-                    break;
-                    //e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(SimWifiP2pSocket... values) {
-            mCliSocket = values[0];
-            mComm = new ReceiveCommTask();
-
-            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
-        }
-    }
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = new Messenger(service);
-            mManager = new SimWifiP2pManager(mService);
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-            mBound = true;
-            mManager.requestPeers(mChannel,(PeerListListener) MainAirDesk.this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mManager = null;
-            mChannel = null;
-            mBound = false;
-        }
-    };
-
-
     private View.OnClickListener listenerConnectButton = new View.OnClickListener() {
         public void onClick(View v){
+            findViewById(R.id.ConnectButton).setEnabled(false);
             StringBuilder peersStr = new StringBuilder();
             mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
             if (mBound) {
@@ -473,6 +331,127 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     };
 
 
+    private View.OnClickListener listenerInGroupButton = new View.OnClickListener() {
+        public void onClick(View v){
+            if (mBound) {
+                mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
+            } else {
+                Toast.makeText(v.getContext(), "Service not bound",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+
+    /***********************************************************************************************/
+    /****************************    onActivityResult    *******************************************/
+    /***********************************************************************************************/
+
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == 1) {
+                if (resultCode == RESULT_OK) {
+                    Intent intent = getIntent();
+                    //WorkspaceRepresentation workspaceRepresentation = null;
+                    String comments = "teste2";
+
+
+                    filename = data.getStringExtra("titles");
+                    maxSize = data.getStringExtra("contents");
+
+                    //workspaceRepresentation = datasource.createWorkspaceRepresentation(filename, "lol", "lol");
+                    listAdapter.add(filename);
+
+                    //values.add(filename);
+                    //contents.add(conteudo);
+                    listAdapter.notifyDataSetChanged();
+                    refreshForeignList();
+
+                }
+            }
+        }
+
+    /***********************************************************************************************/
+    /****************************    resetDatabase   ***********************************************/
+    /****************************         and        ***********************************************/
+    /**************************  refreshForeignList  ***********************************************/
+    /***********************************************************************************************/
+
+    public void resetDatabase(View view){
+        datasource.resetDatabase();
+        values2.clear();
+        listAdapter2.notifyDataSetChanged();
+    }
+
+    public void refreshForeignList(){
+        values2.clear();
+        values2 = datasource.GetAllValues(login);
+        listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
+        listView2.setAdapter(listAdapter2);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main_air_desk, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        refreshForeignList();
+
+
+    }
+
+    /***********************************************************************************************/
+    /****************************    ServiceConnection   *******************************************/
+    /***********************************************************************************************/
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+            mBound = true;
+            mManager.requestPeers(mChannel,(PeerListListener) MainAirDesk.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mManager = null;
+            mChannel = null;
+            mBound = false;
+        }
+    };
+
+    /***********************************************************************************************/
+    /****************************    onPeersAvailable    *******************************************/
+    /***********************************************************************************************/
+
+
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         StringBuilder peersStr = new StringBuilder();
@@ -488,6 +467,12 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         lastPeers = peers;
 
     }
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+    /****************************    OutgoingCommTask    *******************************************/
+    /***********************************************************************************************/
+    /***********************************************************************************************/
 
     public class OutgoingCommTask extends AsyncTask<String, Void, String> {
 
@@ -526,6 +511,64 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         }
     }
 
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+    /****************************    IncommingCommTask    ******************************************/
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    Log.v("conadamae","passou accpeted");
+                    if (mCliSocket != null && mCliSocket.isClosed()) {
+                        mCliSocket = null;
+                    }
+                    if (mCliSocket != null) {
+                        Log.d(TAG, "Closing accepted socket because mCliSocket still active.");
+                        sock.close();
+                    } else {
+                        publishProgress(sock);
+                    }
+                } catch (IOException e) {
+                    Log.d("Error accepting socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(SimWifiP2pSocket... values) {
+            mCliSocket = values[0];
+            mComm = new ReceiveCommTask();
+
+            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
+        }
+    }
+
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+    /****************************    ReceiveCommTask      ******************************************/
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
     public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
 
@@ -548,7 +591,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                     publishProgress(ds.getId());
                 }
 
-
+c
 
 
 
@@ -565,7 +608,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         @Override
         protected void onPreExecute() {
-
+            findViewById(R.id.ConnectButton).setEnabled(false);
 
         }
 
@@ -595,6 +638,26 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
             }
         }
+    }
+
+    private void guiSetButtonListeners() {
+
+        button = (Button) findViewById(R.id.button);
+        listView = (ListView) findViewById(R.id.listView);
+        listView2 = (ListView) findViewById(R.id.listView2);
+        findViewById(R.id.WifiOnButton).setOnClickListener(listenerWifiOnButton);
+        findViewById(R.id.InRangeButton).setOnClickListener(listenerInRangeButton);
+        findViewById(R.id.ConnectButton).setOnClickListener(listenerConnectButton);
+        findViewById(R.id.SendButton).setOnClickListener(listenerSendButton);
+    }
+
+    private void guiUpdateInitState() {
+
+
+        findViewById(R.id.ConnectButton).setEnabled(false);
+        findViewById(R.id.SendButton).setEnabled(false);
+        findViewById(R.id.WifiOnButton).setEnabled(true);
+        findViewById(R.id.InRangeButton).setEnabled(false);
     }
 
 }

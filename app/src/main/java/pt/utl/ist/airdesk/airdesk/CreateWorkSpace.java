@@ -21,6 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSPermissionSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSUsersPermission;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 
 
@@ -32,11 +34,12 @@ public class CreateWorkSpace extends ActionBarActivity {
     private EditText workspaceUsers;
     private CheckBox checkbox;
     private String login;
-    private WSDataSource datasource;
+    private WSDataSource datasourceWorkspace;
     String permission = "r";
     private SeekBar seekBar;
     private Long sdcard;
     private int lastProgress;
+    private WSPermissionSource datasourcePermissions;
 
     //dsfsdf
 
@@ -45,8 +48,10 @@ public class CreateWorkSpace extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_work_space);
 
-        datasource = new WSDataSource(this);
-        datasource.open();
+        datasourceWorkspace = new WSDataSource(this);
+        datasourceWorkspace.open();
+        datasourcePermissions = new WSPermissionSource(this);
+        datasourcePermissions.open();
 
         seekBar = (SeekBar) findViewById(R.id.seekBar);
 
@@ -75,6 +80,7 @@ public class CreateWorkSpace extends ActionBarActivity {
                     String str = workspaceNameEntry .getText().toString();
                 String str2 = workspaceDimensionEntry.getText().toString();
                 WorkspaceRepresentation workspaceRepresentation = null;
+                WSUsersPermission wsUsersPermission = null;
 
                 Intent intent = getIntent();
 
@@ -98,15 +104,18 @@ public class CreateWorkSpace extends ActionBarActivity {
                         intent2.putExtra("titles", str);
                         intent2.putExtra("contents", str2);
 
-                        workspaceRepresentation = datasource.createWorkspaceRepresentation(str, lastProgress, path, login, user, permission);
+                        workspaceRepresentation = datasourceWorkspace.createWorkspaceRepresentation(str, lastProgress, path, login);
 
+                        if(!user.equals("")) {
+                            wsUsersPermission = datasourcePermissions.createPermissionsRepresentation(str, user, permission);
+                        }
                         setResult(RESULT_OK, intent2);
                         finish();
                     }
 
                 }
                 else{
-                    Toast.makeText(CreateWorkSpace.this, "Mininal quota is 0",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateWorkSpace.this, "Minimal quota is 0",Toast.LENGTH_SHORT).show();
                 }
 
            }

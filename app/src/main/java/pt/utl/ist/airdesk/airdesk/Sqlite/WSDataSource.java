@@ -93,7 +93,7 @@ public class WSDataSource {
         ArrayList<String> list = new ArrayList<String>();
 //ss
 
-        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE users='"+login+"'", null);
+        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE owner='"+login+"'", null);
 
 
         while(cursor.moveToNext()){

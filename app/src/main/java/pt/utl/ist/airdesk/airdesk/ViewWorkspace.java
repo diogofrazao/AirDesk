@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import pt.utl.ist.airdesk.airdesk.Sqlite.UsersDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSPermissionSource;
 
 
 public class ViewWorkspace extends ActionBarActivity {
@@ -35,7 +36,8 @@ public class ViewWorkspace extends ActionBarActivity {
     private ArrayAdapter<String> listAdapter;
     String path;
     File f;
-    private WSDataSource datasource;
+    private WSDataSource datasourceWorkspace;
+    private WSPermissionSource datasourcePermissions;
     private String permission;
     private String workspace;
     private String loginWorkspace;
@@ -57,8 +59,10 @@ public class ViewWorkspace extends ActionBarActivity {
         //listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, filesList);
        // listView.setAdapter(listAdapter);
 
-        datasource = new WSDataSource(this);
-        datasource.open();
+        datasourceWorkspace = new WSDataSource(this);
+        datasourceWorkspace.open();
+        datasourcePermissions = new WSPermissionSource(this);
+        datasourcePermissions.open();
 
        path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+name;
         f = new File(path);
@@ -78,7 +82,7 @@ public class ViewWorkspace extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                permission = datasource.getPermission(workspace, loginWorkspace);
+                permission = datasourcePermissions.getPermission(workspace, loginWorkspace);
                 Intent intent = new Intent(ViewWorkspace.this,ViewFile.class);
                 intent.putExtra("fileName",filesList.get(position));
                 intent.putExtra("path",path);
@@ -134,7 +138,7 @@ public class ViewWorkspace extends ActionBarActivity {
 
     public void onClickCreateFile(View view){
 
-        permission = datasource.getPermission(workspace, loginWorkspace);
+        permission = datasourcePermissions.getPermission(workspace, loginWorkspace);
 
         if(ambiente.equals("local")) {
             Intent createFile = new Intent(ViewWorkspace.this,CreateFile.class);
@@ -178,7 +182,7 @@ else {
             alert.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
 
-                   datasource.updateUser(input.getText().toString(),workspace );
+                   datasourcePermissions.createPermissionsRepresentation(workspace,input.getText().toString(),"rw" );
                     Toast.makeText(getApplicationContext(), "workspace shared with " + input.getText().toString(),
                             Toast.LENGTH_LONG).show();
 
