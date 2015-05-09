@@ -288,6 +288,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private View.OnClickListener listenerConnectButton = new View.OnClickListener() {
         public void onClick(View v){
             findViewById(R.id.ConnectButton).setEnabled(false);
+            findViewById(R.id.SendButton).setEnabled(true);
             StringBuilder peersStr = new StringBuilder();
             mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
             if (mBound) {
@@ -641,6 +642,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         @Override
         protected void onPreExecute() {
             findViewById(R.id.ConnectButton).setEnabled(false);
+            findViewById(R.id.SendButton).setEnabled(true);
 
         }
 
@@ -649,7 +651,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             Log.v("conadamae", values[0]);
             Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
             listAdapter2.add(values[0]);
-            listAdapter.notifyDataSetChanged();
+
 
         }
 
