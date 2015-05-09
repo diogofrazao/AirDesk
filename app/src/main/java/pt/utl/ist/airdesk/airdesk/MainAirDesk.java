@@ -545,8 +545,12 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 if(o instanceof toBePassed) {
                     toBePassed ds = (toBePassed)o;
                     // do something with ds
-                    publishProgress(ds.getbalda());
+                    publishProgress(ds.getId());
                 }
+
+
+
+
 
              //   while ((st = sockIn.readLine()) != null) {
              //       publishProgress(st);

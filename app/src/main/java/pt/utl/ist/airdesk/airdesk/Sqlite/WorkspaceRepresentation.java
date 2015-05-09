@@ -9,17 +9,7 @@ public class WorkspaceRepresentation {
     private String storage;
     private String path;
     private String owner;
-    private String users;
     private long id;
-    private String permission;
-
-    public String getPermission() {
-        return permission;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
 
     public long getId() {
         return id;
@@ -43,14 +33,6 @@ public class WorkspaceRepresentation {
 
     public String getOwner() {
         return owner;
-    }
-
-    public String getUsers() {
-        return users;
-    }
-
-    public void setUsers(String users) {
-        this.users = users;
     }
 
     public String getNameWs() {

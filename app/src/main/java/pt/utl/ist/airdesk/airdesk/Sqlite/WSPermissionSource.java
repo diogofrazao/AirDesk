@@ -1,27 +1,26 @@
 package pt.utl.ist.airdesk.airdesk.Sqlite;
 
-/**
- * Created by diogofrazao on 24/03/15.
- */
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-public class WSDataSource {
-//sdas
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by duarte on 5/9/15.
+ */
+public class WSPermissionSource {
     // Database fields
     //ss
     //sdas
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID , MySQLiteHelper.COLUMN_NAMEWS,
-            MySQLiteHelper.COLUMN_STORAGE, MySQLiteHelper.COLUMN_PATH, MySQLiteHelper.COLUMN_OWNER};
+    private String[] allColumns = { MySQLiteHelper.COLUMN_ID , MySQLiteHelper.COLUMN_WS,
+            MySQLiteHelper.COLUMN_USER, MySQLiteHelper.COLUMN_RIGHTS};
+
 
     public WSDataSource(Context context) {
 
@@ -38,19 +37,19 @@ public class WSDataSource {
         dbHelper.close();
     }
 
-    public WorkspaceRepresentation createWorkspaceRepresentation(String nameWs, int storage, String path, String owner) {
+    public WSUsersPermission createWorkspaceRepresentation(String nameWs,String user, String rights) {
 
 
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_NAMEWS, nameWs);
-        values.put(MySQLiteHelper.COLUMN_STORAGE, storage);
-        values.put(MySQLiteHelper.COLUMN_PATH, path);
-        values.put(MySQLiteHelper.COLUMN_OWNER, owner);
+        values.put(MySQLiteHelper.COLUMN_USER, user);
+        values.put(MySQLiteHelper.COLUMN_RIGHTS, rights);
 
-        long insertId = database.insert(MySQLiteHelper.TABLE_WS, null,
+
+        long insertId = database.insert(MySQLiteHelper.TABLE_RIGHTS, null,
                 values);
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_WS,
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_RIGHTS,
                 allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
 
@@ -64,7 +63,7 @@ public class WSDataSource {
     public void deleteComment(WorkspaceRepresentation comment) {
         long id = comment.getId();
         System.out.println("Comment deleted with id: " + id);
-        database.delete(MySQLiteHelper.TABLE_WS, MySQLiteHelper.COLUMN_ID
+        database.delete(MySQLiteHelper.TABLE_RIGHTS, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
 
@@ -86,66 +85,23 @@ public class WSDataSource {
     }
 
 
-    public ArrayList<String> GetAllValues(String login){
-        String aTable = "ws";
-        String aColumn[] = {"nameWs"};
+    public ArrayList<String> GetAllWSByUser(String user){
 
         ArrayList<String> list = new ArrayList<String>();
-//ss
 
-        Cursor cursor = database.rawQuery("SELECT nameWs FROM ws WHERE users='"+login+"'", null);
-
+        Cursor cursor = database.rawQuery("SELECT colWs FROM ws WHERE colUser='"+user+"'", null);
 
         while(cursor.moveToNext()){
             list.add(cursor.getString(0));
-
         }
-
-
-
 
         return list;
     }
 
-    /*
-    public void getId(String login){
-        String aTable = "ws";
-        String aColumn[] = {"nameWs"};
-
-
-        Cursor cursor = database.rawQuery("SELECT id FROM ws WHERE users='"+login+"'", null);
-
-
-
-
-    }
-*/
-    public String getOwner(String workspace){
-        String aTable = "ws";
-        String aColumn[] = {"nameWs"};
-
-        String owner = "lol";
-
-
-        Cursor cursor = database.rawQuery("SELECT owner FROM ws WHERE nameWs='"+workspace+"'", null);
-
-
-        while(cursor.moveToNext()){
-           owner = cursor.getString(0);
-
-        }
-
-       return owner;
-
-    }
-
     public void deleteWorkspaceEntry(String workspace){
-
-
 
         database.delete(MySQLiteHelper.TABLE_WS, MySQLiteHelper.COLUMN_NAMEWS
                 + "=" + "'"+workspace+"'", null);
-
 
     }
 
@@ -217,13 +173,17 @@ public class WSDataSource {
         dbHelper.onUpgrade(database,1,2);
     }
 
-    private WorkspaceRepresentation cursorToComment(Cursor cursor) {
-        WorkspaceRepresentation comment = new WorkspaceRepresentation();
+    private WSUsersPermission cursorToComment(Cursor cursor) {
+        WSUsersPermission comment = new WSUsersPermission();
+
         comment.setId(cursor.getLong(0));
-        comment.setNameWs(cursor.getString(1));
-        comment.setStorage(cursor.getString(2));
-        comment.setPath(cursor.getString(3));
-        comment.setPath(cursor.getString(4));
+
+        comment.setWorkspaceName(cursor.getString(1));
+        comment.setUser(cursor.getString(2));
+        comment.setRights(cursor.getString(3));
+
+
         return comment;
     }
 }
+

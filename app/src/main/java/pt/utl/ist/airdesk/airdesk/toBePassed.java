@@ -7,11 +7,13 @@ import java.io.Serializable;
  */
 public class toBePassed implements Serializable {
 
+    String id;
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    String balda="xuxu";
-
-    String getbalda(){
-        return balda;
+    public String getId(){
+        return id;
     }
 }
