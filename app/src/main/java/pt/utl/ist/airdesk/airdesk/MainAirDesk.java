@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -451,7 +453,13 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             if (mBound) {
                 try {
                     Log.v("conadamae","antes");
-                    mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                    toBePassed objectToBePassed = new toBePassed();
+
+                    ObjectOutputStream oos = new ObjectOutputStream(mCliSocket.getOutputStream());
+                    oos.writeObject(objectToBePassed);
+
+                    //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
 
                     Log.v("conadamae", "depois");
                 } catch (IOException e) {
@@ -528,16 +536,26 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
             s = params[0];
             try {
-                sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
+               // sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 Log.v("conadamae","receivecomm");
-                while ((st = sockIn.readLine()) != null) {
-                    publishProgress(st);
+
+                ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+
+                Object o = ois.readObject();
+                if(o instanceof toBePassed) {
+                    toBePassed ds = (toBePassed)o;
+                    // do something with ds
+                    publishProgress(ds.getbalda());
+                }
+
+             //   while ((st = sockIn.readLine()) != null) {
+             //       publishProgress(st);
                     Log.v("conadamae","recebi");
                    // Toast.makeText(getApplicationContext(),"recebi: " + st, Toast.LENGTH_LONG).show();
-                }
+
             } catch (IOException e) {
                 Log.d("Error reading socket:", e.getMessage());
-            }
+            }catch(ClassNotFoundException e){e.getMessage();}
             return null;
         }
 
