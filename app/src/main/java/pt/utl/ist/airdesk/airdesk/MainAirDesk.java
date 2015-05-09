@@ -44,9 +44,10 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
+import pt.utl.ist.airdesk.airdesk.Sqlite.WSPermissionSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
-
+import pt.utl.ist.airdesk.airdesk.datastructures.*;
 
 public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener {
 
@@ -58,6 +59,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private ArrayAdapter<String> listAdapter;
     private ArrayAdapter<String> listAdapter2;
     private WSDataSource datasource;
+    private WSPermissionSource datasourcePermissions;
     private ArrayList<String> values;
     private ArrayList<String> values2;
     private String filename;
@@ -109,6 +111,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         datasource = new WSDataSource(this);
         datasource.open();
+        datasourcePermissions = new WSPermissionSource(this);
 
         final Intent intent = getIntent();
 
@@ -312,7 +315,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 try {
                     Log.v("conadamae","antes");
 
-                    toBePassed objectToBePassed = new toBePassed();
+                    toBePassed objectToBePassed = new toBePassed(login);
 
                     ObjectOutputStream oos = new ObjectOutputStream(mCliSocket.getOutputStream());
                     oos.writeObject(objectToBePassed);
@@ -584,18 +587,47 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
 
+                ArrayList<WorkspaceRepToBeSent> lwrtbs = new ArrayList<WorkspaceRepToBeSent>();
+
                 Object o = ois.readObject();
                 if(o instanceof toBePassed) {
                     toBePassed ds = (toBePassed)o;
                     // do something with ds
-                    publishProgress(ds.getId());
+                    //publishProgress(ds.getId());
+
+                    List<String> listaDeWSApassar = datasourcePermissions.GetAllWSByUser(ds.getId());
+
+                    for(String ws : listaDeWSApassar){
+
+                        final String path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+ws;
+                        File f = new File(path);
+                        File file[] = f.listFiles();
+                        ArrayList<String> wsFileNames = new ArrayList<String>();
+
+                        if(file!=null) {
+                            for (int i = 0; i < file.length; i++) {
+                                wsFileNames.add(file[i].getName());
+                            }
+                        }
+
+                        lwrtbs.add(new WorkspaceRepToBeSent(ws,wsFileNames));
+                    }
+                    ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                    oos.writeObject(new WorkspacesShared(lwrtbs));
                 }
 
-c
+                if(o instanceof WorkspacesShared) {
+
+                    WorkspacesShared received = (WorkspacesShared)o;
+                    //received.getFrom();
+                    for(WorkspaceRepToBeSent wsRec : received.getWs()){
+                        publishProgress(wsRec.get_name());
+                    }
+
+                }
 
 
-
-             //   while ((st = sockIn.readLine()) != null) {
+                    //   while ((st = sockIn.readLine()) != null) {
              //       publishProgress(st);
                     Log.v("conadamae","recebi");
                    // Toast.makeText(getApplicationContext(),"recebi: " + st, Toast.LENGTH_LONG).show();
@@ -614,8 +646,8 @@ c
 
         @Override
         protected void onProgressUpdate(String... values) {
-            Log.v("conadamae",values[0]);
-            Toast.makeText(getApplicationContext(),"recebi: " + values[0], Toast.LENGTH_LONG).show();
+            Log.v("conadamae", values[0]);
+            Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
             listAdapter2.add(values[0]);
             listAdapter.notifyDataSetChanged();
 

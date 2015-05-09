@@ -1,5 +1,7 @@
 package pt.utl.ist.airdesk.airdesk.datastructures;
 
+import java.util.List;
+
 /**
  * Created by duarte on 5/9/15.
  */
@@ -25,7 +27,7 @@ public class WorkspaceRepToBeSent {
 
     List<String> _files;
 
-    public WorkspaceRepToBeSent(string name, List<String> files){
+    public WorkspaceRepToBeSent(String name, List<String> files){
         _name= name;
         _files=files;
     }
