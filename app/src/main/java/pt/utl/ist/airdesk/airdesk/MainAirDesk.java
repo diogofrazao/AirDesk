@@ -74,6 +74,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pDeviceList lastPeers;
     StringBuilder peersStrGlobal;
+    WorkspacesShared foreignWS;
 
     public SimWifiP2pManager getManager() {
         return mManager;
@@ -112,6 +113,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         datasource = new WSDataSource(this);
         datasource.open();
         datasourcePermissions = new WSPermissionSource(this);
+        datasourcePermissions.open();
+
 
         final Intent intent = getIntent();
 
@@ -147,6 +150,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 intent.putExtra("wsName",values.get(position));
                 intent.putExtra("login",login);
                 intent.putExtra("ambiente","local");
+
                 startActivity(intent);
             }
         });
@@ -161,6 +165,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 intent.putExtra("login",owner);
                 intent.putExtra("ambiente","publico");
 
+                ArrayList<String> listOfStrings = new ArrayList<String>(foreignWS.getFilesByName(values2.get(position)).get_files().size());
+                listOfStrings.addAll(foreignWS.getFilesByName(values2.get(position)).get_files());
+
+                intent.putStringArrayListExtra("list",listOfStrings);
                 startActivity(intent);
             }
         });
@@ -583,8 +591,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
             s = params[0];
             try {
-
-                while(true) {
+                    while(true){
                     // sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
                     Log.v("conadamae", "receivecomm");
 
@@ -599,9 +606,13 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         // do something with ds
                         //publishProgress(ds.getId());
 
+                        //publishProgress(ds.getId());
+
                         List<String> listaDeWSApassar = datasourcePermissions.GetAllWSByUser(ds.getId());
 
                         for (String ws : listaDeWSApassar) {
+
+                            Log.v("conadamae", "wsapassar");
 
                             final String path = Environment.getExternalStorageDirectory().toString() + "/" + login + "/" + ws;
                             File f = new File(path);
@@ -621,7 +632,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                     }
 
                     if (o instanceof WorkspacesShared) {
-
+                        foreignWS = (WorkspacesShared) o;
                         WorkspacesShared received = (WorkspacesShared) o;
                         //received.getFrom();
                         for (WorkspaceRepToBeSent wsRec : received.getWs()) {
@@ -630,8 +641,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
                     }
                     Log.v("conadamae","recebi");
-                }
-
+                    }
                     //   while ((st = sockIn.readLine()) != null) {
              //       publishProgress(st);
 

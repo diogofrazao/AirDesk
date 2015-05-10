@@ -89,7 +89,7 @@ public class WSPermissionSource {
 
         ArrayList<String> list = new ArrayList<String>();
 
-        Cursor cursor = database.rawQuery("SELECT colWs FROM ws WHERE colUser='"+user+"'", null);
+        Cursor cursor = database.rawQuery("SELECT colWs FROM tabRights WHERE colUser='"+user+"'", null);
 
         while(cursor.moveToNext()){
             list.add(cursor.getString(0));

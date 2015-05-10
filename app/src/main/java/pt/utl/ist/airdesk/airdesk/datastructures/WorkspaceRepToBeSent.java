@@ -1,11 +1,12 @@
 package pt.utl.ist.airdesk.airdesk.datastructures;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by duarte on 5/9/15.
  */
-public class WorkspaceRepToBeSent {
+public class WorkspaceRepToBeSent implements Serializable {
 
     String _name;
 

@@ -56,6 +56,7 @@ public class ViewWorkspace extends ActionBarActivity {
         ambiente = name2;
         workspace = name;
         final String login = intent.getStringExtra("login");
+
         //listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, filesList);
        // listView.setAdapter(listAdapter);
 
@@ -64,16 +65,21 @@ public class ViewWorkspace extends ActionBarActivity {
         datasourcePermissions = new WSPermissionSource(this);
         datasourcePermissions.open();
 
-       path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+name;
-        f = new File(path);
-        File file[] = f.listFiles();
+        if(ambiente.equals("local")) {
+            path = Environment.getExternalStorageDirectory().toString() + "/" + login + "/" + name;
+            f = new File(path);
+            File file[] = f.listFiles();
 
-        if(!(file == null)) {
-            for (int i = 0; i < file.length; i++) {
-                filesList.add(file[i].getName());
+            if (!(file == null)) {
+                for (int i = 0; i < file.length; i++) {
+                    filesList.add(file[i].getName());
+                }
             }
-        }
+        }else{
 
+            filesList = intent.getStringArrayListExtra("list");
+
+        }
         listAdapter = new ArrayAdapter<String>(this, R.layout.mylistfile ,R.id.Itemname, filesList);
         listView.setAdapter(listAdapter);
         editText.setText(name, TextView.BufferType.EDITABLE);
