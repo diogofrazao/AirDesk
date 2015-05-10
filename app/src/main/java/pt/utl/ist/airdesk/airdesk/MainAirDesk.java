@@ -583,54 +583,58 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
             s = params[0];
             try {
-               // sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                Log.v("conadamae","receivecomm");
 
-                ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+                while(true) {
+                    // sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    Log.v("conadamae", "receivecomm");
 
-                ArrayList<WorkspaceRepToBeSent> lwrtbs = new ArrayList<WorkspaceRepToBeSent>();
+                    ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
 
-                Object o = ois.readObject();
-                if(o instanceof toBePassed) {
-                    toBePassed ds = (toBePassed)o;
-                    // do something with ds
-                    //publishProgress(ds.getId());
+                    ArrayList<WorkspaceRepToBeSent> lwrtbs = new ArrayList<WorkspaceRepToBeSent>();
 
-                    List<String> listaDeWSApassar = datasourcePermissions.GetAllWSByUser(ds.getId());
+                    Object o = ois.readObject();
 
-                    for(String ws : listaDeWSApassar){
+                    if (o instanceof toBePassed) {
+                        toBePassed ds = (toBePassed) o;
+                        // do something with ds
+                        //publishProgress(ds.getId());
 
-                        final String path = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+ws;
-                        File f = new File(path);
-                        File file[] = f.listFiles();
-                        ArrayList<String> wsFileNames = new ArrayList<String>();
+                        List<String> listaDeWSApassar = datasourcePermissions.GetAllWSByUser(ds.getId());
 
-                        if(file!=null) {
-                            for (int i = 0; i < file.length; i++) {
-                                wsFileNames.add(file[i].getName());
+                        for (String ws : listaDeWSApassar) {
+
+                            final String path = Environment.getExternalStorageDirectory().toString() + "/" + login + "/" + ws;
+                            File f = new File(path);
+                            File file[] = f.listFiles();
+                            ArrayList<String> wsFileNames = new ArrayList<String>();
+
+                            if (file != null) {
+                                for (int i = 0; i < file.length; i++) {
+                                    wsFileNames.add(file[i].getName());
+                                }
                             }
+
+                            lwrtbs.add(new WorkspaceRepToBeSent(ws, wsFileNames));
+                        }
+                        ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                        oos.writeObject(new WorkspacesShared(lwrtbs));
+                    }
+
+                    if (o instanceof WorkspacesShared) {
+
+                        WorkspacesShared received = (WorkspacesShared) o;
+                        //received.getFrom();
+                        for (WorkspaceRepToBeSent wsRec : received.getWs()) {
+                            publishProgress(wsRec.get_name());
                         }
 
-                        lwrtbs.add(new WorkspaceRepToBeSent(ws,wsFileNames));
                     }
-                    ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-                    oos.writeObject(new WorkspacesShared(lwrtbs));
+                    Log.v("conadamae","recebi");
                 }
-
-                if(o instanceof WorkspacesShared) {
-
-                    WorkspacesShared received = (WorkspacesShared)o;
-                    //received.getFrom();
-                    for(WorkspaceRepToBeSent wsRec : received.getWs()){
-                        publishProgress(wsRec.get_name());
-                    }
-
-                }
-
 
                     //   while ((st = sockIn.readLine()) != null) {
              //       publishProgress(st);
-                    Log.v("conadamae","recebi");
+
                    // Toast.makeText(getApplicationContext(),"recebi: " + st, Toast.LENGTH_LONG).show();
 
             } catch (IOException e) {
