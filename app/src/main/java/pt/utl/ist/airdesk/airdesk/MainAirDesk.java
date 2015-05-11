@@ -3,6 +3,7 @@ package pt.utl.ist.airdesk.airdesk;
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -11,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
@@ -49,7 +49,7 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
 import pt.utl.ist.airdesk.airdesk.datastructures.*;
 
-public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener {
+public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
     public static final String TAG = "airdesk";
     private Button button;
@@ -269,6 +269,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                     AsyncTask.THREAD_POOL_EXECUTOR);
             findViewById(R.id.ConnectButton).setEnabled(true);
 
+
         }
     };
 
@@ -276,7 +277,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private View.OnClickListener listenerInRangeButton = new View.OnClickListener() {
         public void onClick(View v){
             if (mBound) {
-                mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
+
+                mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
+
+                /*mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
                 // display list of devices in range
                 new AlertDialog.Builder(MainAirDesk.this)
                         .setTitle("Devices in WiFi Range")
@@ -285,7 +289,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         })
-                        .show();
+                        .show();*/
             } else {
                 Toast.makeText(v.getContext(), "Service not bound",
                         Toast.LENGTH_SHORT).show();
@@ -480,11 +484,35 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
     }
 
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList simWifiP2pDeviceList, SimWifiP2pInfo simWifiP2pInfo) {
+
+        lastPeers = simWifiP2pDeviceList;
+
+        simWifiP2pInfo.getDeviceName();
+
+        for(String a : simWifiP2pInfo.getDevicesInNetwork()){
+
+            Log.v("conadamae","simwifip2pdeviceList "+a);
+
+
+        };
+        Log.v("conadamae","No groupavailablePeers");
+        for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
+            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+            Log.v("conadamae","No groupavailablePeers->virtIp: "+device.getVirtIp()+" Port: "+device.getVirtPort());
+
+        }
+    }
+
     /***********************************************************************************************/
     /***********************************************************************************************/
     /****************************    OutgoingCommTask    *******************************************/
     /***********************************************************************************************/
     /***********************************************************************************************/
+
+    //solução :criamos uma thread diferente, passamos-lhe a socket server e ai sim fazemos accept()...assim
+    //    bloqueia dentro das varias threads(n ha problema varias ligações num porto)
 
     public class OutgoingCommTask extends AsyncTask<String, Void, String> {
 
@@ -546,6 +574,58 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     SimWifiP2pSocket sock = mSrvSocket.accept();
+
+
+                    Log.v("conadamae","passou accpeted");
+                    if (mCliSocket != null && mCliSocket.isClosed()) {
+                        mCliSocket = null;
+                    }
+                    if (mCliSocket != null) {
+                        Log.d(TAG, "Closing accepted socket because mCliSocket still active.");
+                        sock.close();
+                    } else {
+                        publishProgress(sock);
+                    }
+                } catch (IOException e) {
+                    Log.d("Error accepting socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(SimWifiP2pSocket... values) {
+            mCliSocket = values[0];
+            mComm = new ReceiveCommTask();
+
+            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
+        }
+    }
+
+
+    //thread que vai receber a socket depois do accept...assim n bloqueia e podemos ter varias
+
+
+    public class acceptorTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+
+
                     Log.v("conadamae","passou accpeted");
                     if (mCliSocket != null && mCliSocket.isClosed()) {
                         mCliSocket = null;
@@ -608,6 +688,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
                         //publishProgress(ds.getId());
 
+                        //lastPeers
+
                         List<String> listaDeWSApassar = datasourcePermissions.GetAllWSByUser(ds.getId());
 
                         for (String ws : listaDeWSApassar) {
@@ -640,6 +722,16 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         }
 
                     }
+
+                    if (o instanceof WorkspacesShared) {
+                            foreignWS = (WorkspacesShared) o;
+                            WorkspacesShared received = (WorkspacesShared) o;
+                            //received.getFrom();
+                            for (WorkspaceRepToBeSent wsRec : received.getWs()) {
+                                publishProgress(wsRec.get_name());
+                            }
+
+                        }
                     Log.v("conadamae","recebi");
                     }
                     //   while ((st = sockIn.readLine()) != null) {
@@ -705,7 +797,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         findViewById(R.id.ConnectButton).setEnabled(false);
         findViewById(R.id.SendButton).setEnabled(false);
         findViewById(R.id.WifiOnButton).setEnabled(true);
-        findViewById(R.id.InRangeButton).setEnabled(false);
+        findViewById(R.id.InRangeButton).setEnabled(true);
     }
 
 }
