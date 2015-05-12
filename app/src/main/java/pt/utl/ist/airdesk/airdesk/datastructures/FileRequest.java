@@ -6,19 +6,29 @@ package pt.utl.ist.airdesk.airdesk.datastructures;
 public class FileRequest {
 
     // states if it is a request or response
-    boolean request;
     String workspace;
     String fileName;
 
-    String typeRequest;
 
-    public boolean isRequest() {
-        return request;
-    }
-
-    public void setRequest(boolean request) {
-        this.request = request;
+    public FileRequest(String workspace, String fileName) {
+        this.workspace = workspace;
+        this.fileName = fileName;
     }
 
 
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }

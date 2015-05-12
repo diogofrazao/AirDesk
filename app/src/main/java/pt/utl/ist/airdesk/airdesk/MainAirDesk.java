@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,6 +57,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private ListView listView;
     private ListView listView2;
     private ArrayList<String> listaWorkplacesPrivados;
+    private ArrayList<DeviceInformation> listaDeDevices;
     private ArrayAdapter<String> listAdapter;
     private ArrayAdapter<String> listAdapter2;
     private WSDataSource datasource;
@@ -74,7 +76,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pDeviceList lastPeers;
     StringBuilder peersStrGlobal;
-    WorkspacesShared foreignWS;
+    List<WorkspaceRepToBeSent> foreignWS;
     String myname;
 
     public SimWifiP2pManager getManager() {
@@ -95,7 +97,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         guiUpdateInitState();
 
         listaWorkplacesPrivados = new ArrayList<String>();
-
+        listaDeDevices = new ArrayList<DeviceInformation>();
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
@@ -110,6 +112,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         registerReceiver(receiver, filter);
 
         peersStrGlobal = new StringBuilder();
+
+        foreignWS = new ArrayList<WorkspaceRepToBeSent>();
 
         datasource = new WSDataSource(this);
         datasource.open();
@@ -159,17 +163,36 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String owner;
+                String owner = null;
                 Intent intent = new Intent(MainAirDesk.this, ViewWorkspace.class);
-                owner = datasource.getOwner(values2.get(position));
+                //owner = datasource.getOwner(values2.get(position));
                 intent.putExtra("wsName",values2.get(position));
-                intent.putExtra("login",owner);
+               // intent.putExtra("login",owner);
                 intent.putExtra("ambiente","publico");
+                WorkspaceRepToBeSent wsToSend = null;
+                DeviceInformation deviceInformationToSend = null;
 
-                ArrayList<String> listOfStrings = new ArrayList<String>(foreignWS.getFilesByName(values2.get(position)).get_files().size());
-                listOfStrings.addAll(foreignWS.getFilesByName(values2.get(position)).get_files());
+                for (WorkspaceRepToBeSent ws : foreignWS){
+                    if(ws.get_name().equals(values2.get(position))){
+                        owner = ws.get_sentFrom();
+                        wsToSend = ws;
+                    }
+                }
 
-                intent.putStringArrayListExtra("list",listOfStrings);
+                for(DeviceInformation dvInformation : listaDeDevices){
+                    if(dvInformation.getUserLogin().equals(owner)){
+                        deviceInformationToSend = dvInformation;
+                    }
+                }
+
+                intent.putExtra("deviceInformation",deviceInformationToSend);
+
+                intent.putExtra("from", owner);
+
+                ArrayList<String> listOfStrings = new ArrayList<String>();
+                listOfStrings.addAll(wsToSend.get_files());
+
+                intent.putStringArrayListExtra("list", listOfStrings);
                 startActivity(intent);
             }
         });
@@ -516,7 +539,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
-        refreshForeignList();
+        //refreshForeignList();
 
 
     }
@@ -707,8 +730,9 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                     ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
 
                     ArrayList<WorkspaceRepToBeSent> lwrtbs = new ArrayList<WorkspaceRepToBeSent>();
-
+                    WorkspacesShared foreignWsReceived;
                     Object o = ois.readObject();
+
 
                     if (o instanceof toBePassed) {
                         toBePassed ds = (toBePassed) o;
@@ -736,29 +760,77 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                                 }
                             }
 
-                            WorkspaceRepToBeSent reptobe =new WorkspaceRepToBeSent(ws,myname);
+                            WorkspaceRepToBeSent reptobe =new WorkspaceRepToBeSent(ws,login);
                             reptobe.set_files(wsFileNames);
                             lwrtbs.add(reptobe);
                         }
                         ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-                        oos.writeObject(new WorkspacesShared(lwrtbs));
+                        oos.writeObject(new WorkspacesShared(lwrtbs,myname,login));
 
                         break;
                     }
 
                     if (o instanceof WorkspacesShared) {
-                        foreignWS = (WorkspacesShared) o;
-                        WorkspacesShared received = (WorkspacesShared) o;
+                        foreignWsReceived = (WorkspacesShared) o;
+                        //WorkspacesShared received = (WorkspacesShared) o;
+                        String owner;
                         //received.getFrom();
-                        for (WorkspaceRepToBeSent wsRec : received.getWs()) {
+                        String networkName = foreignWsReceived.get_networkName();
+                        SimWifiP2pDevice receivedDevice = lastPeers.getByName(networkName);
+                        String ip = receivedDevice.getVirtIp();
+                        int port = receivedDevice.getVirtPort();
+                        String receivedLogin = foreignWsReceived.get_login();
+
+                        listaDeDevices.add(new DeviceInformation(port, networkName, receivedLogin, ip));
+                        Log.v("conadamae",port+"|"+networkName+"|"+receivedLogin+"|"+ip);
+
+
+                        for (WorkspaceRepToBeSent wsRec : foreignWsReceived.getWs()) {
+                            foreignWS.add(wsRec);
                             publishProgress(wsRec.get_name());
+
                         }
+
                         break;
                     }
+                    if (o instanceof  FileRequest){
+                        FileRequest fileRequest;
+                        fileRequest = (FileRequest) o;
+                        String text = new String();
+
+                        String fileName =fileRequest.getFileName();
+                        String fileWorkspace = fileRequest.getWorkspace();
+
+                        String pathForFile = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+fileWorkspace;
+                        File file  = new File(pathForFile,fileName);
+
+                        try {
+                            BufferedReader br = new BufferedReader(new FileReader(file));
+                            String line;
+
+                            while ((line = br.readLine()) != null) {
+                                text = text+line;
+                                text = text+'\n';
+                            }
+                            br.close();
+                        }
+                        catch (IOException e) {
+                            //You'll need to add proper error handling here
+                        }
+
+                        ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+
+                        oos.writeObject(new FileResponse(text));
 
 
+                    }
 
-                    Log.v("conadamae","recebi");
+                    if (o instanceof FileResponse){
+                        FileResponse fileResponse;
+                        fileResponse = (FileResponse) o;
+                        publishProgress(fileResponse.getFile());
+                    }
+                    Log.v("conadamae", "recebi");
                     }
                     //   while ((st = sockIn.readLine()) != null) {
              //       publishProgress(st);
@@ -782,8 +854,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         protected void onProgressUpdate(String... values) {
             Log.v("conadamae", values[0]);
             Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
-            listAdapter2.add(values[0]);
-
+            values2.add(values[0]);
+            listAdapter2.notifyDataSetChanged();
 
         }
 

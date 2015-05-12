@@ -13,4 +13,5 @@
     <string name="title_activity_view_file">ViewFile</string>
     <string name="title_activity_create_file">CreateFile</string>
     <string name="port">10001</string>
+    <string name="title_activity_view_foreign_file">ViewForeignFile</string>
 </resources>

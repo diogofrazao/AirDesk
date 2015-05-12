@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import pt.utl.ist.airdesk.airdesk.Sqlite.UsersDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSDataSource;
 import pt.utl.ist.airdesk.airdesk.Sqlite.WSPermissionSource;
+import pt.utl.ist.airdesk.airdesk.datastructures.DeviceInformation;
 
 
 public class ViewWorkspace extends ActionBarActivity {
@@ -42,6 +43,8 @@ public class ViewWorkspace extends ActionBarActivity {
     private String workspace;
     private String loginWorkspace;
     private String ambiente;
+    Intent intent;
+    DeviceInformation deviceInformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +53,14 @@ public class ViewWorkspace extends ActionBarActivity {
         listView = (GridView) findViewById(R.id.listView3);
         TextView editText = (TextView) findViewById(R.id.editText);
         filesList = new ArrayList<String>();
-        Intent intent = getIntent();
+        intent = getIntent();
         final String name = intent.getStringExtra("wsName");
         final String name2 = intent.getStringExtra("ambiente");
         ambiente = name2;
         workspace = name;
         final String login = intent.getStringExtra("login");
+
+
 
         //listAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, filesList);
        // listView.setAdapter(listAdapter);
@@ -76,7 +81,7 @@ public class ViewWorkspace extends ActionBarActivity {
                 }
             }
         }else{
-
+            deviceInformation = (DeviceInformation) intent.getSerializableExtra("deviceInformation");
             filesList = intent.getStringArrayListExtra("list");
 
         }
@@ -88,14 +93,22 @@ public class ViewWorkspace extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                permission = datasourcePermissions.getPermission(workspace, loginWorkspace);
-                Intent intent = new Intent(ViewWorkspace.this,ViewFile.class);
-                intent.putExtra("fileName",filesList.get(position));
-                intent.putExtra("path",path);
-                intent.putExtra("ambiente",ambiente);
-                intent.putExtra("permission",permission);
-                intent.putExtra("wsName",workspace);
-                startActivity(intent);
+                if(ambiente.equals("local")) {
+                    permission = datasourcePermissions.getPermission(workspace, loginWorkspace);
+                    Intent viewFile = new Intent(ViewWorkspace.this, ViewFile.class);
+                    viewFile.putExtra("fileName", filesList.get(position));
+                    viewFile.putExtra("path", path);
+                    viewFile.putExtra("ambiente", ambiente);
+                    viewFile.putExtra("permission", permission);
+                    viewFile.putExtra("wsName", workspace);
+                    startActivity(viewFile);
+                }
+                else{
+                    Intent viewFile = new Intent(ViewWorkspace.this, ViewForeignFile.class);
+                    String from = intent.getStringExtra("from");
+                    startActivity(viewFile);
+
+                }
             }
         });
 

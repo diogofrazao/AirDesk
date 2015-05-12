@@ -15,6 +15,16 @@ public class WorkspaceRepToBeSent implements Serializable {
 
     String _sentFrom;
 
+    public String get_sentFrom() {
+        return _sentFrom;
+    }
+
+    public void set_sentFrom(String _sentFrom) {
+        this._sentFrom = _sentFrom;
+    }
+
+
+
     public List<String> get_files() {
         return _files;
     }
@@ -26,6 +36,8 @@ public class WorkspaceRepToBeSent implements Serializable {
     public String get_name() {
         return _name;
     }
+
+
 
     public void set_name(String _name) {
         this._name = _name;

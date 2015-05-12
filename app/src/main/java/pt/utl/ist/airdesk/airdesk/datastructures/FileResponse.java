@@ -5,13 +5,17 @@ package pt.utl.ist.airdesk.airdesk.datastructures;
  */
 public class FileResponse {
 
-    byte[] _file;
+    String _file;
 
-    public byte[] getFile() {
+    public FileResponse(String _file) {
+        this._file = _file;
+    }
+
+    public String getFile() {
         return _file;
     }
 
-    public void setFile(byte[] file) {
+    public void setFile(String file) {
         this._file = file;
     }
 

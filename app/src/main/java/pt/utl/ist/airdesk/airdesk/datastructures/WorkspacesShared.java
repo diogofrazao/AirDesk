@@ -9,15 +9,26 @@ import java.util.List;
 public class WorkspacesShared implements Serializable{
 
     List<WorkspaceRepToBeSent> ws;
-    String from;
+    String _networkName;
 
-    public String getFrom() {
-        return from;
+    public String get_login() {
+        return _login;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void set_login(String _login) {
+        this._login = _login;
     }
+
+    String _login;
+
+    public String get_networkName() {
+        return _networkName;
+    }
+
+    public void set_networkName(String _networkName) {
+        this._networkName = _networkName;
+    }
+
 
     public WorkspaceRepToBeSent getFilesByName(String wsname){
 
@@ -28,8 +39,19 @@ public class WorkspacesShared implements Serializable{
         return null;
     }
 
-    public WorkspacesShared(List<WorkspaceRepToBeSent> ws) {
+    public WorkspaceRepToBeSent getOwnerByName(String wsname){
+
+        for(WorkspaceRepToBeSent a : ws){
+            if(a.get_sentFrom().equals(wsname)){return a;}
+
+        }
+        return null;
+    }
+
+    public WorkspacesShared(List<WorkspaceRepToBeSent> ws,String networkName,String login) {
         this.ws = ws;
+        _networkName = networkName;
+        _login = login;
     }
 
     public List<WorkspaceRepToBeSent> getWs() {
