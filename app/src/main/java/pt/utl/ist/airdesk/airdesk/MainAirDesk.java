@@ -75,6 +75,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private SimWifiP2pDeviceList lastPeers;
     StringBuilder peersStrGlobal;
     WorkspacesShared foreignWS;
+    String myname;
 
     public SimWifiP2pManager getManager() {
         return mManager;
@@ -265,12 +266,49 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             mBound = true;
 
             // spawn the chat server background task
-            new IncommingCommTask().executeOnExecutor(
+         /*   new IncommingCommTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR);
-            findViewById(R.id.ConnectButton).setEnabled(true);
+            findViewById(R.id.ConnectButton).setEnabled(true);*/
+
+            ///tentativa multithread
 
 
-        }
+                    Thread t = new Thread() {
+                        public void run() {
+
+                            try{
+                                mSrvSocket = new SimWifiP2pSocketServer(
+                                        Integer.parseInt(getString(R.string.port)));
+                                while(true) {
+
+                                    final SimWifiP2pSocket s = mSrvSocket.accept();
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            new ReceiveCommTask().executeOnExecutor(
+                                                    AsyncTask.THREAD_POOL_EXECUTOR, s);
+                                        }
+                                    });
+
+
+                                }
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    t.start();
+
+
+
+
+                findViewById(R.id.ConnectButton).setEnabled(true);
+            }
+            ///////////////////////////////
+
     };
 
 
@@ -305,12 +343,15 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
             mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
             if (mBound) {
                 for (SimWifiP2pDevice device : lastPeers.getDeviceList()) {
+
                     String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
                     peersStr.append(devstr);
                     String virtIp = device.getVirtIp();
                     int virtPort = device.getVirtPort();
                     Log.v("conadamae","virtIp: "+virtIp+" Port: "+virtPort);
                     Toast.makeText(getApplicationContext(),"virtIp: "+virtIp+" Port: "+virtPort, Toast.LENGTH_LONG).show();
+
+
                     new OutgoingCommTask().executeOnExecutor(
                             AsyncTask.THREAD_POOL_EXECUTOR,
                             virtIp);
@@ -322,16 +363,54 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         }
     };
 
+
+
+
+
     private View.OnClickListener listenerSendButton = new View.OnClickListener() {
         public void onClick(View v){
             if (mBound) {
+
+                Thread t = new Thread() {
+                    public void run() {
+
                 try {
+
                     Log.v("conadamae","antes");
 
                     toBePassed objectToBePassed = new toBePassed(login);
 
-                    ObjectOutputStream oos = new ObjectOutputStream(mCliSocket.getOutputStream());
-                    oos.writeObject(objectToBePassed);
+                    for (SimWifiP2pDevice device : lastPeers.getDeviceList()) {
+                        if(!myname.equals(device.deviceName)) {
+
+                            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+                            Log.v("conadamae", "sending->virtIp: " + device.getVirtIp() + " Port: " + device.getVirtPort());
+
+                            final SimWifiP2pSocket cli = new SimWifiP2pSocket(device.getVirtIp(), device.getVirtPort());
+
+                            ObjectOutputStream oos = new ObjectOutputStream(cli.getOutputStream());
+                            oos.writeObject(objectToBePassed);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    new ReceiveCommTask().executeOnExecutor(
+                                            AsyncTask.THREAD_POOL_EXECUTOR, cli);
+                                }
+                            });
+
+
+
+                            //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                            Log.v("conadamae", "depois");
+
+
+                        }
+
+
+                    }
 
                     //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
 
@@ -339,6 +418,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                    }
+                };
+                t.start();
             } else {
                 Toast.makeText(v.getContext(), "Service not bound",
                         Toast.LENGTH_SHORT).show();
@@ -489,14 +572,10 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         lastPeers = simWifiP2pDeviceList;
 
-        simWifiP2pInfo.getDeviceName();
-
-        for(String a : simWifiP2pInfo.getDevicesInNetwork()){
-
-            Log.v("conadamae","simwifip2pdeviceList "+a);
+        myname = simWifiP2pInfo.getDeviceName();
 
 
-        };
+
         Log.v("conadamae","No groupavailablePeers");
         for (SimWifiP2pDevice device : simWifiP2pDeviceList.getDeviceList()) {
             String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
@@ -605,56 +684,6 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     }
 
 
-    //thread que vai receber a socket depois do accept...assim n bloqueia e podemos ter varias
-
-
-    public class acceptorTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
-
-            try {
-                mSrvSocket = new SimWifiP2pSocketServer(
-                        Integer.parseInt(getString(R.string.port)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
-
-
-                    Log.v("conadamae","passou accpeted");
-                    if (mCliSocket != null && mCliSocket.isClosed()) {
-                        mCliSocket = null;
-                    }
-                    if (mCliSocket != null) {
-                        Log.d(TAG, "Closing accepted socket because mCliSocket still active.");
-                        sock.close();
-                    } else {
-                        publishProgress(sock);
-                    }
-                } catch (IOException e) {
-                    Log.d("Error accepting socket:", e.getMessage());
-                    break;
-                    //e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(SimWifiP2pSocket... values) {
-            mCliSocket = values[0];
-            mComm = new ReceiveCommTask();
-
-            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
-        }
-    }
-
-
     /***********************************************************************************************/
     /***********************************************************************************************/
     /****************************    ReceiveCommTask      ******************************************/
@@ -707,10 +736,14 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                                 }
                             }
 
-                            lwrtbs.add(new WorkspaceRepToBeSent(ws, wsFileNames));
+                            WorkspaceRepToBeSent reptobe =new WorkspaceRepToBeSent(ws,myname);
+                            reptobe.set_files(wsFileNames);
+                            lwrtbs.add(reptobe);
                         }
                         ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
                         oos.writeObject(new WorkspacesShared(lwrtbs));
+
+                        break;
                     }
 
                     if (o instanceof WorkspacesShared) {
@@ -720,18 +753,11 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         for (WorkspaceRepToBeSent wsRec : received.getWs()) {
                             publishProgress(wsRec.get_name());
                         }
-
+                        break;
                     }
 
-                    if (o instanceof WorkspacesShared) {
-                            foreignWS = (WorkspacesShared) o;
-                            WorkspacesShared received = (WorkspacesShared) o;
-                            //received.getFrom();
-                            for (WorkspaceRepToBeSent wsRec : received.getWs()) {
-                                publishProgress(wsRec.get_name());
-                            }
 
-                        }
+
                     Log.v("conadamae","recebi");
                     }
                     //   while ((st = sockIn.readLine()) != null) {
@@ -794,8 +820,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private void guiUpdateInitState() {
 
 
-        findViewById(R.id.ConnectButton).setEnabled(false);
-        findViewById(R.id.SendButton).setEnabled(false);
+        findViewById(R.id.ConnectButton).setEnabled(true);
+        findViewById(R.id.SendButton).setEnabled(true);
         findViewById(R.id.WifiOnButton).setEnabled(true);
         findViewById(R.id.InRangeButton).setEnabled(true);
     }

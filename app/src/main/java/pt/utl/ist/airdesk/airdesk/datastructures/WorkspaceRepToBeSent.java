@@ -1,6 +1,7 @@
 package pt.utl.ist.airdesk.airdesk.datastructures;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,6 +10,10 @@ import java.util.List;
 public class WorkspaceRepToBeSent implements Serializable {
 
     String _name;
+
+    List<String> _files;
+
+    String _sentFrom;
 
     public List<String> get_files() {
         return _files;
@@ -26,13 +31,9 @@ public class WorkspaceRepToBeSent implements Serializable {
         this._name = _name;
     }
 
-    List<String> _files;
-
-    public WorkspaceRepToBeSent(String name, List<String> files){
+    public WorkspaceRepToBeSent(String name, String from){
         _name= name;
-        _files=files;
+        _sentFrom = from;
+        _files= new ArrayList<String>();
     }
-
-
-
 }

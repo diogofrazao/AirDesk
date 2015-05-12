@@ -7,7 +7,10 @@ public class FileRequest {
 
     // states if it is a request or response
     boolean request;
-    byte[] file;
+    String workspace;
+    String fileName;
+
+    String typeRequest;
 
     public boolean isRequest() {
         return request;
@@ -17,12 +20,5 @@ public class FileRequest {
         this.request = request;
     }
 
-    public byte[] getFile() {
-        return file;
-    }
-
-    public void setFile(byte[] file) {
-        this.file = file;
-    }
 
 }
