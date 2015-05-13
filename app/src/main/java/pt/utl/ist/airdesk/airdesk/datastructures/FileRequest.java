@@ -1,9 +1,11 @@
 package pt.utl.ist.airdesk.airdesk.datastructures;
 
+import java.io.Serializable;
+
 /**
  * Created by duarte on 5/10/15.
  */
-public class FileRequest {
+public class FileRequest implements Serializable {
 
     // states if it is a request or response
     String workspace;

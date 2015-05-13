@@ -1,9 +1,11 @@
 package pt.utl.ist.airdesk.airdesk.datastructures;
 
+import java.io.Serializable;
+
 /**
  * Created by diogofrazao on 12/05/15.
  */
-public class FileResponse {
+public class FileResponse implements Serializable {
 
     String _file;
 

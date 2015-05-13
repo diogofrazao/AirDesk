@@ -37,6 +37,8 @@ public class ViewForeignFile extends ActionBarActivity {
     private String fileName;
     private String workspace;
     TextView fileTextView;
+    private Button saveFile;
+    private Button editFile;
     DeviceInformation deviceInformation;
 
     @Override
@@ -46,6 +48,7 @@ public class ViewForeignFile extends ActionBarActivity {
 
         TextView fileNameView = (TextView) findViewById(R.id.editText);
         fileTextView = (EditText) findViewById(R.id.editText2);
+        saveFile = (Button) findViewById(R.id.button5);
 
 
         Intent intent = getIntent();
@@ -97,7 +100,9 @@ public class ViewForeignFile extends ActionBarActivity {
             }
         };
         t.start();
-
+        fileTextView.setEnabled(false);
+        fileTextView.setClickable(false);
+        saveFile.setEnabled(false);
     }
 
     @Override
@@ -163,8 +168,7 @@ public class ViewForeignFile extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
-            findViewById(R.id.ConnectButton).setEnabled(false);
-            findViewById(R.id.SendButton).setEnabled(true);
+
 
         }
 
