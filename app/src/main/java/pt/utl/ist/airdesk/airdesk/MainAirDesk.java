@@ -815,7 +815,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                             br.close();
                         }
                         catch (IOException e) {
-                            //You'll need to add proper error handling here
+                            e.printStackTrace();
                         }
 
                         ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());

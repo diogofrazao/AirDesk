@@ -82,7 +82,10 @@ public class ViewWorkspace extends ActionBarActivity {
             }
         }else{
             deviceInformation = (DeviceInformation) intent.getSerializableExtra("deviceInformation");
+            Intent viewFile = new Intent(ViewWorkspace.this,ViewForeignFile.class);
+
             filesList = intent.getStringArrayListExtra("list");
+
 
         }
         listAdapter = new ArrayAdapter<String>(this, R.layout.mylistfile ,R.id.Itemname, filesList);
@@ -105,7 +108,9 @@ public class ViewWorkspace extends ActionBarActivity {
                 }
                 else{
                     Intent viewFile = new Intent(ViewWorkspace.this, ViewForeignFile.class);
-                    String from = intent.getStringExtra("from");
+                    viewFile.putExtra("deviceInformation",deviceInformation);
+                    viewFile.putExtra("fileName", filesList.get(position));
+                    viewFile.putExtra("wsName", workspace);
                     startActivity(viewFile);
 
                 }
