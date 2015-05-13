@@ -765,7 +765,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                             lwrtbs.add(reptobe);
                         }
                         ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-                        oos.writeObject(new WorkspacesShared(lwrtbs,myname,login));
+                        oos.writeObject(new WorkspacesShared(lwrtbs, myname, login));
 
                         break;
                     }
@@ -821,7 +821,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
 
                         oos.writeObject(new FileResponse(text));
-
+                    break;
 
                     }
 
@@ -829,6 +829,25 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         FileResponse fileResponse;
                         fileResponse = (FileResponse) o;
                         publishProgress(fileResponse.getFile());
+                        break;
+                    }
+
+                    if (o instanceof FileRequestAlteration){
+                        FileRequestAlteration fileRequestAlteration;
+                        fileRequestAlteration = (FileRequestAlteration) o;
+                        String text = fileRequestAlteration.get_text();
+                        String pathOfFile = Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+fileRequestAlteration.get_workspaceName()+"/"+fileRequestAlteration.get_fileName();
+                        File f = new File(pathOfFile);
+                        FileWriter writer = new FileWriter(f);
+                        writer.append(text);
+                        writer.flush();
+                        writer.close();
+
+                        ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+
+                        oos.writeObject(new FileResponseAlteration("saved"));
+                        break;
+
                     }
                     Log.v("conadamae", "recebi");
                     }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,9 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.utl.ist.airdesk.airdesk.datastructures.DeviceInformation;
 import pt.utl.ist.airdesk.airdesk.datastructures.FileRequest;
+import pt.utl.ist.airdesk.airdesk.datastructures.FileRequestAlteration;
 import pt.utl.ist.airdesk.airdesk.datastructures.FileResponse;
+import pt.utl.ist.airdesk.airdesk.datastructures.FileResponseAlteration;
 import pt.utl.ist.airdesk.airdesk.datastructures.WorkspaceRepToBeSent;
 import pt.utl.ist.airdesk.airdesk.datastructures.WorkspacesShared;
 import pt.utl.ist.airdesk.airdesk.datastructures.toBePassed;
@@ -105,7 +109,62 @@ public class ViewForeignFile extends ActionBarActivity {
         saveFile.setEnabled(false);
     }
 
-    @Override
+
+    public void onClickSave(View view) {
+
+        Thread t = new Thread() {
+            public void run() {
+
+                try {
+
+                    Log.v("conadamae", "antes");
+
+                    FileRequestAlteration fileRequestAlteration = new FileRequestAlteration(fileTextView.getText().toString(), workspace, fileName);
+
+
+                    final SimWifiP2pSocket s = new SimWifiP2pSocket(deviceInformation.getIp(), deviceInformation.getPort());
+
+                    ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                    oos.writeObject(fileRequestAlteration);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            new ReceiveFileCommTask().executeOnExecutor(
+                                    AsyncTask.THREAD_POOL_EXECUTOR, s);
+                        }
+                    });
+
+
+
+                    //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                    Log.v("conadamae", "depois");
+
+                    //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                    Log.v("conadamae", "depois");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        t.start();
+        saveFile.setEnabled(false);
+    }
+
+    public void onClickEdit(View view){
+
+
+            fileTextView.setEnabled(true);
+            fileTextView.setClickable(true);
+            saveFile.setEnabled(true);
+        }
+
+
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_view_foreign_file, menu);
@@ -151,8 +210,19 @@ public class ViewForeignFile extends ActionBarActivity {
                     if (o instanceof FileResponse){
                         FileResponse fileResponse;
                         fileResponse = (FileResponse) o;
-                        publishProgress(fileResponse.getFile());
+                        publishProgress(fileResponse.getFile(),"FileResponse");
+                        break;
                     }
+
+                    if (o instanceof FileResponseAlteration){
+                        FileResponseAlteration fileResponseAlteration;
+                        fileResponseAlteration = (FileResponseAlteration) o;
+                        publishProgress(fileResponseAlteration.get_status(),"FileResponseAlteration");
+                        break;
+                    }
+
+
+
                     Log.v("conadamae", "recebi");
                 }
                 //   while ((st = sockIn.readLine()) != null) {
@@ -174,7 +244,14 @@ public class ViewForeignFile extends ActionBarActivity {
 
         @Override
         protected void onProgressUpdate(String... values) {
-            fileTextView.setText(values[0]);
+            if(values[1].equals("FileResponse")) {
+                fileTextView.setText(values[0]);
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
+                //fileTextView.setText("cheguei");
+                fileTextView.setEnabled(false);
+            }
 
         }
 
