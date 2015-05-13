@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,6 +142,8 @@ public class WSPermissionSource {
         String aTable = "ws";
         String aColumn[] = {"nameWs"};
 
+        Log.v("conadamae", "O worspace recebido para a query foi: "+workspace);
+        Log.v("conadamae","O user recebido para a query foi: "+user);
         String permission = "lol";
 
 

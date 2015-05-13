@@ -45,6 +45,7 @@ public class ViewWorkspace extends ActionBarActivity {
     private String ambiente;
     Intent intent;
     DeviceInformation deviceInformation;
+    private String login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class ViewWorkspace extends ActionBarActivity {
         final String name2 = intent.getStringExtra("ambiente");
         ambiente = name2;
         workspace = name;
-        final String login = intent.getStringExtra("login");
+        login = intent.getStringExtra("login");
 
 
 
@@ -111,6 +112,7 @@ public class ViewWorkspace extends ActionBarActivity {
                     viewFile.putExtra("deviceInformation",deviceInformation);
                     viewFile.putExtra("fileName", filesList.get(position));
                     viewFile.putExtra("wsName", workspace);
+                    viewFile.putExtra("login",login);
                     startActivity(viewFile);
 
                 }

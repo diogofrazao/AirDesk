@@ -78,6 +78,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     StringBuilder peersStrGlobal;
     List<WorkspaceRepToBeSent> foreignWS;
     String myname;
+    List<DataLockStructure> listOfLocks;
 
     public SimWifiP2pManager getManager() {
         return mManager;
@@ -98,6 +99,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         listaWorkplacesPrivados = new ArrayList<String>();
         listaDeDevices = new ArrayList<DeviceInformation>();
+        listOfLocks = new ArrayList<DataLockStructure>();
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(getApplicationContext());
@@ -782,7 +784,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         String receivedLogin = foreignWsReceived.get_login();
 
                         listaDeDevices.add(new DeviceInformation(port, networkName, receivedLogin, ip));
-                        Log.v("conadamae",port+"|"+networkName+"|"+receivedLogin+"|"+ip);
+                        Log.v("conadamae", port + "|" + networkName + "|" + receivedLogin + "|" + ip);
 
 
                         for (WorkspaceRepToBeSent wsRec : foreignWsReceived.getWs()) {
@@ -849,6 +851,42 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                         break;
 
                     }
+
+                        if (o instanceof FileLockRequest){
+                            FileLockRequest fileLockRequest;
+                            fileLockRequest = (FileLockRequest) o;
+                            String fileToLock = fileLockRequest.getFile();
+                            String userLock = fileLockRequest.getLogin();
+                            String wsTolock = fileLockRequest.getWorkpace();
+                            String permission = datasourcePermissions.getPermission(wsTolock, userLock);
+
+                            ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+
+                            Boolean alreadyLocked = false;
+
+                            for(DataLockStructure entry : listOfLocks){
+                                if(entry.getFileName().equals(fileToLock)){
+                                    alreadyLocked = true;
+                                }
+                            }
+
+
+                            Log.v("conadamae",permission);
+                            Log.v("conadamae",alreadyLocked.toString());
+                            if((permission.contains("rw")) && (alreadyLocked==false)){
+
+                                listOfLocks.add(new DataLockStructure(userLock,filename));
+                                oos.writeObject(new FileLockResponse("lock_Acquired",alreadyLocked));
+
+                            }
+                            else{
+
+                                oos.writeObject(new FileLockResponse("lock_Not_Acquired",alreadyLocked));
+                            }
+
+                            //publishProgress(fileLockRequest.getFile(), "FileResponse");
+                            break;
+                        }
                     Log.v("conadamae", "recebi");
                     }
                     //   while ((st = sockIn.readLine()) != null) {

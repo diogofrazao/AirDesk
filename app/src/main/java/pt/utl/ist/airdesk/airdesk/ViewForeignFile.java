@@ -27,6 +27,8 @@ import java.util.List;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.utl.ist.airdesk.airdesk.datastructures.DeviceInformation;
+import pt.utl.ist.airdesk.airdesk.datastructures.FileLockRequest;
+import pt.utl.ist.airdesk.airdesk.datastructures.FileLockResponse;
 import pt.utl.ist.airdesk.airdesk.datastructures.FileRequest;
 import pt.utl.ist.airdesk.airdesk.datastructures.FileRequestAlteration;
 import pt.utl.ist.airdesk.airdesk.datastructures.FileResponse;
@@ -40,10 +42,11 @@ public class ViewForeignFile extends ActionBarActivity {
 
     private String fileName;
     private String workspace;
-    TextView fileTextView;
+    private TextView fileTextView;
     private Button saveFile;
     private Button editFile;
-    DeviceInformation deviceInformation;
+    private DeviceInformation deviceInformation;
+    private String login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class ViewForeignFile extends ActionBarActivity {
         fileName = intent.getStringExtra("fileName");
         workspace = intent.getStringExtra("wsName");
         deviceInformation = (DeviceInformation) intent.getSerializableExtra("deviceInformation");
+        login = intent.getStringExtra("login");
 
         fileNameView.setText(fileName);
 
@@ -156,11 +160,47 @@ public class ViewForeignFile extends ActionBarActivity {
     }
 
     public void onClickEdit(View view){
+        Thread t = new Thread() {
+            public void run() {
+
+                try {
+
+                    Log.v("conadamae", "antes");
+
+                    FileLockRequest fileLockRequest = new FileLockRequest(login,fileName,workspace);
 
 
-            fileTextView.setEnabled(true);
-            fileTextView.setClickable(true);
-            saveFile.setEnabled(true);
+                    final SimWifiP2pSocket s = new SimWifiP2pSocket(deviceInformation.getIp(), deviceInformation.getPort());
+
+                    ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                    oos.writeObject(fileLockRequest);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            new ReceiveFileCommTask().executeOnExecutor(
+                                    AsyncTask.THREAD_POOL_EXECUTOR, s);
+                        }
+                    });
+
+
+
+                    //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                    Log.v("conadamae", "depois");
+
+                    //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                    Log.v("conadamae", "depois");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        t.start();
+
         }
 
 
@@ -223,6 +263,19 @@ public class ViewForeignFile extends ActionBarActivity {
 
 
 
+
+                    if (o instanceof FileLockResponse){
+                        FileLockResponse fileLockResponse;
+                        fileLockResponse = (FileLockResponse) o;
+                        String condition = fileLockResponse.getState().toString();
+                        Log.v("conadamae",condition);
+                        publishProgress(fileLockResponse.getLock(),condition,"FileLockResponse");
+                        break;
+                    }
+
+
+
+
                     Log.v("conadamae", "recebi");
                 }
                 //   while ((st = sockIn.readLine()) != null) {
@@ -246,6 +299,20 @@ public class ViewForeignFile extends ActionBarActivity {
         protected void onProgressUpdate(String... values) {
             if(values[1].equals("FileResponse")) {
                 fileTextView.setText(values[0]);
+            }
+            else if(values[2].equals("FileLockResponse")) {
+                fileTextView.setText(values[0]+" "+values[1]+" "+values[2]);
+                if (values[0].equals("lock_Acquired")) {
+                    fileTextView.setEnabled(true);
+                    fileTextView.setClickable(true);
+                    saveFile.setEnabled(true);
+                } else {
+                    if (values[1].equals("true")) {
+                        Toast.makeText(getApplicationContext(), "You don't have permission to edit the file", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Failed to make the request, try again!", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
             else{
                 Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
