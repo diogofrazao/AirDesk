@@ -32,10 +32,13 @@ public class CreateWorkSpace extends ActionBarActivity {
     private EditText workspaceNameEntry;
     private EditText workspaceDimensionEntry;
     private EditText workspaceUsers;
-    private CheckBox checkbox;
+    private CheckBox checkboxModify;
+    private CheckBox checkboxCreate;
+    private CheckBox checkboxDelete;
     private String login;
     private WSDataSource datasourceWorkspace;
     String permission = "r";
+    StringBuilder stringBuilder;
     private SeekBar seekBar;
     private Long sdcard;
     private int lastProgress;
@@ -53,29 +56,34 @@ public class CreateWorkSpace extends ActionBarActivity {
         datasourcePermissions = new WSPermissionSource(this);
         datasourcePermissions.open();
 
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-
-        workspaceNameEntry = (EditText) findViewById(R.id.workspaceNameEntry);
-
-        workspaceDimensionEntry = (EditText) findViewById(R.id.workspaceDimensionEntry);
-
-        workspaceUsers = (EditText) findViewById(R.id.workspaceUsers);
-
-        workspaceButtonCreate = (Button) findViewById(R.id.workspaceButtonCreate);
-
-        checkbox = (CheckBox) findViewById(R.id.checkBox);
+        findViewInitState();
 
         sdcard = Environment.getExternalStorageDirectory().getFreeSpace();
 
         workspaceButtonCreate.setOnClickListener(new View.OnClickListener() {
 
+
+
             @Override
             public void onClick(View arg0) {
 
-                if (checkbox.isChecked()) {
-                    permission = "rw";
+                StringBuilder stringBuilder = new StringBuilder();
+
+
+
+
+                if(checkboxModify.isChecked()) {
+                    //permission = "rw_";
+                    stringBuilder.append("rw_");
+                }
+                if(checkboxCreate.isChecked()){
+                    stringBuilder.append("c_");
+                }
+                if(checkboxDelete.isChecked()){
+                    stringBuilder.append("d_");
                 }
 
+                permission = stringBuilder.toString();
 
                     String str = workspaceNameEntry .getText().toString();
                 String str2 = workspaceDimensionEntry.getText().toString();
@@ -189,5 +197,23 @@ public class CreateWorkSpace extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void findViewInitState(){
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+
+        workspaceNameEntry = (EditText) findViewById(R.id.workspaceNameEntry);
+
+        workspaceDimensionEntry = (EditText) findViewById(R.id.workspaceDimensionEntry);
+
+        workspaceUsers = (EditText) findViewById(R.id.workspaceUsers);
+
+        workspaceButtonCreate = (Button) findViewById(R.id.workspaceButtonCreate);
+
+        checkboxModify = (CheckBox) findViewById(R.id.checkBoxWrite);
+
+        checkboxCreate = (CheckBox) findViewById(R.id.checkBoxCreateFile);
+
+        checkboxDelete = (CheckBox) findViewById(R.id.checkBoxDelete);
     }
 }

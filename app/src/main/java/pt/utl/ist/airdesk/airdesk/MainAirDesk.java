@@ -171,6 +171,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                 intent.putExtra("wsName",values2.get(position));
                // intent.putExtra("login",owner);
                 intent.putExtra("ambiente","publico");
+                intent.putExtra("login",login);
                 WorkspaceRepToBeSent wsToSend = null;
                 DeviceInformation deviceInformationToSend = null;
 
@@ -329,7 +330,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
 
 
-
+                findViewById(R.id.WifiOnButton).setEnabled(false);
                 findViewById(R.id.ConnectButton).setEnabled(true);
             }
             ///////////////////////////////

@@ -197,10 +197,28 @@ public class ViewWorkspace extends ActionBarActivity {
                     Toast.LENGTH_LONG).show();
         }
 else {
+
+            final CharSequence[] items = {"Modify","Create","Delete"};
+            final ArrayList selectedItems = new ArrayList();
+
             final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
             alert.setTitle("Invite user");
+
+            alert.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    if(isChecked){
+                        selectedItems.add(which);
+                    }
+                    else if (selectedItems.contains(which)){
+                        selectedItems.remove(Integer.valueOf(which));
+                    }
+                }
+            });
+
             alert.setMessage("Name of the user");
+
 
             final EditText input = new EditText(this);
             alert.setView(input);

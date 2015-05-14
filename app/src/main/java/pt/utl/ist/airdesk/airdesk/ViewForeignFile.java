@@ -56,6 +56,7 @@ public class ViewForeignFile extends ActionBarActivity {
         TextView fileNameView = (TextView) findViewById(R.id.editText);
         fileTextView = (EditText) findViewById(R.id.editText2);
         saveFile = (Button) findViewById(R.id.button5);
+        editFile = (Button) findViewById(R.id.button4);
 
 
         Intent intent = getIntent();
@@ -300,12 +301,19 @@ public class ViewForeignFile extends ActionBarActivity {
             if(values[1].equals("FileResponse")) {
                 fileTextView.setText(values[0]);
             }
-            else if(values[2].equals("FileLockResponse")) {
-                fileTextView.setText(values[0]+" "+values[1]+" "+values[2]);
+            else if(values[1].equals("FileResponseAlteration")){
+                Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
+                //fileTextView.setText("cheguei");
+                fileTextView.setEnabled(false);
+                editFile.setEnabled(true);
+            }
+            else {
+
                 if (values[0].equals("lock_Acquired")) {
                     fileTextView.setEnabled(true);
                     fileTextView.setClickable(true);
                     saveFile.setEnabled(true);
+                    editFile.setEnabled(false);
                 } else {
                     if (values[1].equals("true")) {
                         Toast.makeText(getApplicationContext(), "You don't have permission to edit the file", Toast.LENGTH_LONG).show();
@@ -314,11 +322,7 @@ public class ViewForeignFile extends ActionBarActivity {
                     }
                 }
             }
-            else{
-                Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
-                //fileTextView.setText("cheguei");
-                fileTextView.setEnabled(false);
-            }
+
 
         }
 
