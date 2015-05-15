@@ -6,6 +6,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
@@ -50,7 +52,7 @@ import pt.utl.ist.airdesk.airdesk.Sqlite.WorkspaceRepresentation;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
 import pt.utl.ist.airdesk.airdesk.datastructures.*;
 
-public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
+public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener  {
 
     public static final String TAG = "airdesk";
     private Button button;
@@ -79,6 +81,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     List<WorkspaceRepToBeSent> foreignWS;
     String myname;
     List<DataLockStructure> listOfLocks;
+    boolean variavel;
 
     public SimWifiP2pManager getManager() {
         return mManager;
@@ -93,7 +96,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_air_desk);
 
-
+        variavel = true;
         guiSetButtonListeners();
         guiUpdateInitState();
 
@@ -361,15 +364,43 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     };
 
     public void inRange() {
-        if (mBound) {
-            mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
-            updateForeignWsList();
+
+
+
+
+        if(variavel == false){
+            final Handler handler = new Handler();
+            Runnable runable = new Runnable() {
+
+                @Override
+                public void run() {
+                    try{
+                        mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
+                        updateForeignWsList();
+                        handler.postDelayed(this, 10000);
+                    }
+                    catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                    finally{
+                        //also call the same runnable
+                        handler.postDelayed(this, 10000);
+                    }
+                }
+            };
+            variavel = true;
+            handler.postDelayed(runable, 1000);
         }
+        else{
+            mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
+        }
+
+
     }
 
     public void updateForeignWsList(){
         if (mBound) {
-            values2.clear();
+
             Thread t = new Thread() {
                 public void run() {
 
@@ -433,8 +464,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         public void onClick(View v){
 
             if(mBound){
-                inRange();
-               // updateForeignWsList();
+                updateForeignWsList();
             }
             /*findViewById(R.id.ConnectButton).setEnabled(false);
             findViewById(R.id.SendButton).setEnabled(true);
@@ -469,6 +499,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         public void onClick(View v){
             if (mBound) {
                 values2.clear();
+                listAdapter2.notifyDataSetChanged();
                 Thread t = new Thread() {
                     public void run() {
 
@@ -585,12 +616,12 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         listAdapter2.notifyDataSetChanged();
     }
 
-    public void refreshForeignList(){
+    /*public void refreshForeignList(){
         values2.clear();
         values2 = datasource.GetAllValues(login);
         listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
         listView2.setAdapter(listAdapter2);
-    }
+    }*/
 
     public static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
@@ -701,6 +732,9 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         }
     }
+
+
+
 
     /***********************************************************************************************/
     /***********************************************************************************************/

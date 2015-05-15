@@ -89,7 +89,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="In Range"
+        android:text="Detect peers"
         android:id="@+id/InRangeButton"
         android:layout_alignBottom="@+id/WifiOnButton"
         android:layout_alignLeft="@+id/reset"
@@ -112,7 +112,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send"
+        android:text="Update Ws"
         android:id="@+id/SendButton"
         android:layout_above="@+id/textView3"
         android:layout_alignLeft="@+id/textView2"
