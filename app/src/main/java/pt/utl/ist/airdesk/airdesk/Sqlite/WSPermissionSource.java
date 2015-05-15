@@ -126,14 +126,14 @@ public class WSPermissionSource {
     */
 
 
-   /* public void updateUser(String user, String workspace){
-        String strSQL = "UPDATE tabRights SET colUsers='"+user+"'"+ "WHERE colWs='"+workspace+"'";
+    public void updatePermission(String user, String workspace,String permission){
+        String strSQL = "UPDATE tabRights SET colRights='"+permission+"'WHERE colWs='"+workspace+"'" + "AND colUser='"+user+"'";
 
         database.execSQL(strSQL);
 
 
     }
-*/
+
 
 
 
@@ -144,7 +144,7 @@ public class WSPermissionSource {
 
         Log.v("conadamae", "O worspace recebido para a query foi: "+workspace);
         Log.v("conadamae","O user recebido para a query foi: "+user);
-        String permission = "lol";
+        String permission = "Not_Found";
 
 
         Cursor cursor = database.rawQuery("SELECT colRights FROM tabRights WHERE colWs='"+workspace+"'" + "AND colUser='"+user+"'", null);

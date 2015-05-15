@@ -127,7 +127,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
         login = intent.getStringExtra("login");
 
-        values2 = datasource.GetAllValues(login);
+        values2 = new ArrayList<String>();
         values = new ArrayList<String>();
 
         final String path = Environment.getExternalStorageDirectory().toString()+"/"+login;
@@ -329,7 +329,6 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                     t.start();
 
 
-
                 findViewById(R.id.WifiOnButton).setEnabled(false);
                 findViewById(R.id.ConnectButton).setEnabled(true);
             }
@@ -361,9 +360,83 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         }
     };
 
+    public void inRange() {
+        if (mBound) {
+            mManager.requestGroupInfo(mChannel, (SimWifiP2pManager.GroupInfoListener) MainAirDesk.this);
+            updateForeignWsList();
+        }
+    }
+
+    public void updateForeignWsList(){
+        if (mBound) {
+            values2.clear();
+            Thread t = new Thread() {
+                public void run() {
+
+                    try {
+
+                        Log.v("conadamae","antes");
+
+                        toBePassed objectToBePassed = new toBePassed(login);
+
+                        for (SimWifiP2pDevice device : lastPeers.getDeviceList()) {
+                            if(!myname.equals(device.deviceName)) {
+
+                                String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+                                Log.v("conadamae", "sending->virtIp: " + device.getVirtIp() + " Port: " + device.getVirtPort());
+
+                                final SimWifiP2pSocket cli = new SimWifiP2pSocket(device.getVirtIp(), device.getVirtPort());
+
+                                ObjectOutputStream oos = new ObjectOutputStream(cli.getOutputStream());
+                                oos.writeObject(objectToBePassed);
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        new ReceiveCommTask().executeOnExecutor(
+                                                AsyncTask.THREAD_POOL_EXECUTOR, cli);
+                                    }
+                                });
+
+
+
+                                //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                                Log.v("conadamae", "depois");
+
+
+                            }
+
+
+                        }
+
+                        //mCliSocket.getOutputStream().write( ("hello world" + "\n").getBytes());
+
+                        Log.v("conadamae", "depois");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+            t.start();
+        } else {
+            Toast.makeText(getApplicationContext(), "Service not bound",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
     private View.OnClickListener listenerConnectButton = new View.OnClickListener() {
         public void onClick(View v){
-            findViewById(R.id.ConnectButton).setEnabled(false);
+
+            if(mBound){
+                inRange();
+               // updateForeignWsList();
+            }
+            /*findViewById(R.id.ConnectButton).setEnabled(false);
             findViewById(R.id.SendButton).setEnabled(true);
             StringBuilder peersStr = new StringBuilder();
             mManager.requestPeers(mChannel, (PeerListListener) MainAirDesk.this);
@@ -385,10 +458,9 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
             } else {
                 Toast.makeText(getApplicationContext(),"bound = false", Toast.LENGTH_LONG).show();
-            }
+            }*/
         }
     };
-
 
 
 
@@ -396,7 +468,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
     private View.OnClickListener listenerSendButton = new View.OnClickListener() {
         public void onClick(View v){
             if (mBound) {
-
+                values2.clear();
                 Thread t = new Thread() {
                     public void run() {
 
@@ -489,7 +561,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                     //values.add(filename);
                     //contents.add(conteudo);
                     listAdapter.notifyDataSetChanged();
-                    refreshForeignList();
+                    //refreshForeignList();
 
                 }
             }
@@ -503,6 +575,12 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
     public void resetDatabase(View view){
         datasource.resetDatabase();
+
+        File userPath = new File(Environment.getExternalStorageDirectory().toString()+"/"+login);
+        Log.v("conadamae","absolute path:" + userPath.getPath());
+        deleteFolder(userPath);
+        values.clear();
+        listAdapter.notifyDataSetChanged();
         values2.clear();
         listAdapter2.notifyDataSetChanged();
     }
@@ -512,6 +590,20 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         values2 = datasource.GetAllValues(login);
         listAdapter2 = new ArrayAdapter<String>(this,  R.layout.mylistfolder ,R.id.ItemnameFolder, values2);
         listView2.setAdapter(listAdapter2);
+    }
+
+    public static void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
     }
 
     @Override
@@ -872,8 +964,8 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
                             }
 
 
-                            Log.v("conadamae",permission);
-                            Log.v("conadamae",alreadyLocked.toString());
+                            Log.v("conadamae", permission);
+                            Log.v("conadamae", alreadyLocked.toString());
                             if((permission.contains("rw")) && (alreadyLocked==false)){
 
                                 listOfLocks.add(new DataLockStructure(userLock,filename));
@@ -887,6 +979,32 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
 
                             //publishProgress(fileLockRequest.getFile(), "FileResponse");
                             break;
+                        }
+
+                        if(o instanceof FileDeleteRequest){
+                            FileDeleteRequest fileDeleteRequest;
+                            fileDeleteRequest = (FileDeleteRequest) o;
+
+                            File fileToDelete = fileDeleteRequest.getFile();
+
+                            String userName = fileDeleteRequest.getLogin();
+                            String workspace = fileDeleteRequest.getWorkspace();
+
+                            File path = new File(Environment.getExternalStorageDirectory().toString()+"/"+login+"/"+workspace+"/"+fileToDelete);
+                            Log.v("conadamae","caminho do ficheiro: "+path);
+
+                            String permission = datasourcePermissions.getPermission(workspace, userName);
+
+                            ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+                            if(permission.contains("d")) {
+                                oos.writeObject(new FileDeleteResponse("Deleted",fileToDelete.getPath()));
+                                path.delete();
+                            }
+                            else{
+                                oos.writeObject(new FileDeleteResponse("Not_Deleted",fileToDelete.getPath()));
+                            }
+                            break;
+
                         }
                     Log.v("conadamae", "recebi");
                     }
@@ -912,6 +1030,7 @@ public class MainAirDesk extends ActionBarActivity implements SimWifiP2pManager.
         protected void onProgressUpdate(String... values) {
             Log.v("conadamae", values[0]);
             Toast.makeText(getApplicationContext(), "recebi: " + values[0], Toast.LENGTH_LONG).show();
+
             values2.add(values[0]);
             listAdapter2.notifyDataSetChanged();
 
